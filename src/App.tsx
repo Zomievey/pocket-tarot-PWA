@@ -4,7 +4,6 @@ import FiveCard from "./components/fiveCard/FiveCard";
 import SingleCard from "./components/singleCard/SingleCard";
 import ThreeCard from "./components/threeCard/ThreeCard";
 import CustomizeDeck from "./components/customizeDeck/CustomizeDeck";
-import Footer from "./components/footer/Footer";
 import Home from "./Home";
 import { DeckProvider } from "./services/DeckContext";
 
@@ -50,7 +49,7 @@ function App() {
             <Route path='/customizeDeck' element={<CustomizeDeck />} />
           </Routes>
         </main>
-        <Footer />
+     
       </Router>
     </DeckProvider>
   );

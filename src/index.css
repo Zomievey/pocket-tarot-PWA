@@ -1,42 +1,48 @@
-body, html, #root {
+body,
+html,
+#root {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #333;
-  background-color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  color: #fff;
+  background-color: #1c152a;
   height: 100%;
   overflow: hidden;
 }
 
-.container {
+.homeContainer {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  align-items: center; /* Centers the content horizontally */
+  justify-content: center; /* Centers the content vertically */
 }
 
 .overlayContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%; /* Fill entire height of the container */
-  width: 100%; /* Fill entire width of the container */
+  width: 100%;
+  text-align: center;
+  flex-grow: 1; /* Ensures overlayContainer takes up available vertical space */
 }
 
 .overlay {
-  background: rgba(28, 21, 42, 0.7); /* Add transparency to the background */
-  padding: 40px; /* Adjust padding for a larger container */
+  background: rgba(28, 21, 42, 0.7);
+  padding: 40px;
   border-radius: 10px;
+  width: 70%; /* Relative to screen size */
+  max-width: 500px; /* Prevents it from getting too wide */
   text-align: center;
-  width: 70%; /* Increase the width for a larger container */
-  max-width: 500px; /* Limit the maximum width */
 }
 
 .title {
-  font-size: 3.5em; /* Larger title */
+  font-size: 3.5em;
   font-weight: bold;
   color: #fff;
   font-family: "Cinzel Decorative", serif;
@@ -47,7 +53,7 @@ body, html, #root {
   font-size: 2em;
   color: #fff;
   text-decoration: none;
-  margin: 15px 0; /* Add more spacing between links */
+  margin: 15px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,26 +61,11 @@ body, html, #root {
 
 .link-text:hover {
   text-decoration: none;
-  color: #A17BDC; /* Lighter purple color for hover */
+  color: #a17bdc;
 }
 
 .icon {
-  margin-right: 8px; /* Space between icon and text */
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .title {
-    font-size: 1.8em;
-  }
-
-  .link-text {
-    font-size: 1em;
-  }
-
-  .overlay {
-    width: 90%; /* Adjust width on smaller screens */
-  }
+  margin-right: 8px;
 }
 
 .backButton {
@@ -90,7 +81,7 @@ body, html, #root {
 }
 
 .backButton:hover {
-  color: #A17BDC;
+  color: #a17bdc;
 }
 
 .drawButton {
@@ -107,4 +98,19 @@ body, html, #root {
 
 .drawButton:hover {
   background-color: #a17bdc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.8em;
+  }
+
+  .link-text {
+    font-size: 1em;
+  }
+
+  .overlay {
+    width: 90%;
+  }
 }

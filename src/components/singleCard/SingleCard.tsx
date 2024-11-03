@@ -50,9 +50,11 @@ export default function SingleCard() {
       <div className="singleCardWrapper">
         <div className="cardWrapper">
           {/* Card Back */}
-          <div className="cardImageWrapper">
-            <img src={cardBack} alt="Card Back" className="cardImage" />
-          </div>
+          {!card.card && (
+            <div className="cardImageWrapper">
+              <img src={cardBack} alt="Card Back" className="cardImage" />
+            </div>
+          )}
           {/* Card Front */}
           {card.card && (
             <div className="cardImageWrapper front">

@@ -1,9 +1,10 @@
 /* FooterStyles.css */
 
 .footerContainer {
-  padding: 10px;
-  background-color: #333;
-  text-align: center; /* Aligns content in the center horizontally */
+  background-color: rgba(28, 21, 42, 0.7);
+  text-align: center;
+  padding: 1px;
+  width: 100vw;
 }
 
 .footerText {

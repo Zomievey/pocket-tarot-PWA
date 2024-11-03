@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import "./index.css";
+import Footer from './components/footer/Footer';
 
 const Home = () => {
   const backgroundImage = "/assets/images/main-background.png";
 
   return (
     <div
-      className="container"
+      className="homeContainer" // Change container class name to avoid CSS conflicts
       style={{
         backgroundImage: `url(${backgroundImage})`,
       }}
@@ -39,6 +40,7 @@ const Home = () => {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
