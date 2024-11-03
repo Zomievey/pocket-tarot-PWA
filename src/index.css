@@ -1,0 +1,110 @@
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.overlayContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Fill entire height of the container */
+  width: 100%; /* Fill entire width of the container */
+}
+
+.overlay {
+  background: rgba(28, 21, 42, 0.7); /* Add transparency to the background */
+  padding: 40px; /* Adjust padding for a larger container */
+  border-radius: 10px;
+  text-align: center;
+  width: 70%; /* Increase the width for a larger container */
+  max-width: 500px; /* Limit the maximum width */
+}
+
+.title {
+  font-size: 3.5em; /* Larger title */
+  font-weight: bold;
+  color: #fff;
+  font-family: "Cinzel Decorative", serif;
+  margin-bottom: 20px;
+}
+
+.link-text {
+  font-size: 2em;
+  color: #fff;
+  text-decoration: none;
+  margin: 15px 0; /* Add more spacing between links */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-text:hover {
+  text-decoration: none;
+  color: #A17BDC; /* Lighter purple color for hover */
+}
+
+.icon {
+  margin-right: 8px; /* Space between icon and text */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.8em;
+  }
+
+  .link-text {
+    font-size: 1em;
+  }
+
+  .overlay {
+    width: 90%; /* Adjust width on smaller screens */
+  }
+}
+
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.2em;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+}
+
+.backButton:hover {
+  color: #A17BDC;
+}
+
+.drawButton {
+  padding: 10px 20px;
+  background-color: #1c152a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.drawButton:hover {
+  background-color: #a17bdc;
+}

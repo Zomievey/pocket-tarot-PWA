@@ -1,0 +1,12 @@
+/* FooterStyles.css */
+
+.footerContainer {
+  padding: 10px;
+  background-color: #333;
+  text-align: center; /* Aligns content in the center horizontally */
+}
+
+.footerText {
+  color: #fff;
+  font-size: 14px;
+}
