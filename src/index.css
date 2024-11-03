@@ -36,13 +36,13 @@ html,
   background: rgba(28, 21, 42, 0.7);
   padding: 40px;
   border-radius: 10px;
-  width: 70%; /* Relative to screen size */
-  max-width: 500px; /* Prevents it from getting too wide */
+  width: 90%; /* Default width for mobile */
+  max-width: 800px;
   text-align: center;
 }
 
 .title {
-  font-size: 3.5em;
+  font-size: 4.8em;
   font-weight: bold;
   color: #fff;
   font-family: "Cinzel Decorative", serif;
@@ -85,6 +85,10 @@ html,
 }
 
 .drawButton {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   padding: 10px 20px;
   background-color: #1c152a;
   color: white;
@@ -93,7 +97,7 @@ html,
   cursor: pointer;
   font-family: "Cinzel Decorative", serif;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .drawButton:hover {
@@ -102,12 +106,22 @@ html,
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
+  .overlay {
+    width: 85%; /* Increase width on larger screens */
+    max-width: 1000px;
+    padding: 60px; /* Optional: add more padding if needed */
+  }
+
+  .drawButton {
+    font-size: 12px;
+  }
+
   .title {
-    font-size: 1.8em;
+    font-size: 2.5em;
   }
 
   .link-text {
-    font-size: 1em;
+    font-size: 1.3em;
   }
 
   .overlay {

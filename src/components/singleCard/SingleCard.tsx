@@ -37,31 +37,32 @@ export default function SingleCard() {
 
   return (
     <div
-      className="container"
+      className="singleContainer"
       style={{
         backgroundImage: `url(${backgroundImage})`,
       }}
     >
-      {/* Back Button */}
       <button className="backButton" onClick={() => navigate("/")}>
         ← Home
       </button>
 
       <div className="singleCardWrapper">
-        <div className="cardWrapper">
+        <div className="singleCardContainer">
           {/* Card Back */}
           {!card.card && (
-            <div className="cardImageWrapper">
-              <img src={cardBack} alt="Card Back" className="cardImage" />
+            <div className="singleCardImageWrapper">
+              <img src={cardBack} alt="Card Back" className="singleCardImage" />
             </div>
           )}
           {/* Card Front */}
           {card.card && (
-            <div className="cardImageWrapper front">
+            <div className="singleCardImageWrapper">
               <img
                 src={card.card.image}
                 alt={card.card.name}
-                className={`cardImage ${card.isReversed ? "reversed" : ""}`}
+                className={`singleCardImage ${
+                  card.isReversed ? "singleReversed" : ""
+                }`}
               />
             </div>
           )}
@@ -69,11 +70,11 @@ export default function SingleCard() {
 
         {/* Card Description */}
         {card.card && (
-          <div className="descriptionWrapper">
-            <h2 className="cardName">
+          <div className="singleDescriptionWrapper">
+            <h2 className="singleCardName">
               {card.isReversed ? `${card.card.name} Reversed` : card.card.name}
             </h2>
-            <p className="cardDescription">
+            <p className="singleCardDescription">
               {card.isReversed
                 ? card.card.reversedDescription
                 : card.card.description}

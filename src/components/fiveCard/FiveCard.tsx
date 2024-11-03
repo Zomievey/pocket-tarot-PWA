@@ -148,7 +148,7 @@ export default function FiveCard() {
 
       <button
         onClick={cardCount < 5 ? drawCard : resetCards}
-        className='button'
+        className='drawButton'
       >
         {getButtonText()}
       </button>

@@ -53,14 +53,14 @@ export default function ThreeCard() {
 
   return (
     <div
-      className='background'
+      className='threeContainer'
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <button className='backButton' onClick={() => navigate("/")}>
         ← Home
       </button>
 
-      <div className='container'>
+      <div className='threeContainer'>
         <div className='threeCardWrapper'>
           {Array.from({ length: 3 }).map((_, index) => {
             const card = cards[index];
@@ -70,7 +70,7 @@ export default function ThreeCard() {
                 key={card ? card.card.name : index}
                 className='threeCardContainer'
               >
-                <div className='cardImageWrapper'>
+                <div className='threeCardImageWrapper'>
                   {/* Card Back */}
                   <img
                     src={cardBack}
@@ -84,19 +84,19 @@ export default function ThreeCard() {
                       src={card.card.image}
                       alt={card.card.name}
                       className={`threeCardImage ${
-                        card.isReversed ? "reversed" : ""
+                        card.isReversed ? "threeReversed" : ""
                       }`}
                     />
                   )}
                 </div>
                 {card && (
-                  <div className='descriptionWrapper'>
-                    <h2 className='cardName'>
+                  <div className='threeDescriptionWrapper'>
+                    <h2 className='threeCardName'>
                       {card.isReversed
                         ? `${card.card.name} Reversed`
                         : card.card.name}
                     </h2>
-                    <p className='cardDescription'>
+                    <p className='threeCardDescription'>
                       {card.isReversed
                         ? card.card.reversedDescription
                         : card.card.description}

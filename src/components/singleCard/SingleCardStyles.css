@@ -1,9 +1,10 @@
-.container {
+.singleContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center content vertically */
+  justify-content: flex-start; /* Start content closer to the top */
   height: 100vh; /* Full viewport height */
+  padding-top: 60px; /* Adjust padding as needed */
   background-size: cover;
   background-position: center;
 }
@@ -13,64 +14,78 @@
   flex-direction: column;
   align-items: center;
   max-width: 500px;
-  margin-bottom: 20px; /* Space between card and button */
 }
 
-.cardWrapper {
-  position: relative;
-  width: 35vw;
+.singleCardContainer {
+  width: 40vw;
   max-width: 300px;
   aspect-ratio: 2 / 3;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  position: relative;
+  margin-top: 70px;
 }
 
-.cardImageWrapper {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.singleCardImageWrapper {
+  position: relative;
+  width: 85%;
+  aspect-ratio: 2 / 3;
   border-radius: 10px;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.cardImage {
+.singleCardImage {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
 }
 
-.front {
-  z-index: 1;
-}
-
-.reversed {
+.singleReversed {
   transform: rotate(180deg);
 }
 
-.descriptionWrapper {
-  display: flex;
-  flex-direction: column;
+.singleDescriptionWrapper {
   align-items: center;
-  margin-top: 15px; /* Space between card and description */
-  margin-bottom: 20px; /* Space between description and button */
+  width: 80vw;
   text-align: center;
 }
 
-.cardName {
-  font-size: 24px;
+/* Default font sizes */
+.singleCardName {
+  font-size: 32px;
   color: #ffffff;
-  font-weight: bold;
   font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  margin: 0;
 }
 
-.cardDescription {
-  font-size: 16px;
+.singleCardDescription {
+  font-size: 26px;
   color: #ffffff;
-  font-weight: 700;
-  padding: 10px;
-  max-width: 80%; /* Restrict width for readability */
+}
+
+/* Adjust font sizes for larger screens */
+
+@media (min-width: 900px) {
+  .singleCardName {
+    font-size: 40px;
+  }
+
+  .singleCardDescription {
+    font-size: 36px;
+  }
+}
+
+/* Adjust font sizes for very large screens */
+
+/* Adjust font sizes for smaller mobile screens */
+@media (max-width: 600px) {
+  .singleCardName {
+    font-size: 24px;
+  }
+
+  .singleCardDescription {
+    font-size: 18px;
+  }
 }

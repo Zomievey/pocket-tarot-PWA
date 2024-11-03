@@ -7,13 +7,6 @@
   background-color: #1c152a;
 }
 
-.overlayContainer {
-  width: 100%;
-  max-width: 600px; /* Limit the width for mobile */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .overlayCustom {
   background-color: rgba(28, 21, 42, 0.7);
@@ -21,7 +14,8 @@
   padding: 20px;
   text-align: center;
   width: 90%; /* Reduce width for better fit on mobile */
-  max-width: 500px;
+  max-width: 365px;
+  max-height: 510px;
 }
 
 .imageContainer {
