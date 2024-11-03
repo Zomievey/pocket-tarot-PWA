@@ -17,8 +17,7 @@
 }
 
 .singleCardContainer {
-  width: 40vw;
-  max-width: 300px;
+  width: 35vw;
   aspect-ratio: 2 / 3;
   display: flex;
   flex-direction: column;
@@ -31,7 +30,7 @@
   position: relative;
   width: 85%;
   aspect-ratio: 2 / 3;
-  border-radius: 10px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
