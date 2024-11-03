@@ -1,36 +1,43 @@
-.background {
+.fiveCardBackground {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: flex-start; /* Start content closer to the top */
+  height: 100vh; /* Full viewport height */
+  padding-top: 60px; /* Adjust padding as needed */
   background-size: cover;
   background-position: center;
-  height: 100vh;
 }
 
 .fiveCardWrapper {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: flex-start;
-  width: 90%;
-  margin-right: 25px;
-  margin-bottom: 150px;
+  width: 80%;
+  margin-top: 30%;
 }
 
 .fiveCardContainer {
-  width: 20%;
+  width: 20vw;
+  max-width: 150px;
   aspect-ratio: 2 / 3;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   position: relative;
   margin: 0 12px;
   border: none;
   background: transparent;
   cursor: pointer;
+  transition: transform 0.3s ease; /* Smooth transition for scaling */
+}
+.activeCard {
+  transform: scale(1.8); /* Increase scale for active card */
+  z-index: 1; /* Bring active card to the front */
 }
 
-.cardImageWrapper {
-  width: 80%;
+.fiveCardImageWrapper {
+  width: 100%;
   aspect-ratio: 2 / 3;
   border-radius: 5px;
   overflow: hidden;
@@ -42,30 +49,56 @@
 .fiveCardImage {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
 }
 
-.descriptionWrapper {
-  align-items: center;
-  width: 20%;
-  position: absolute;
-  top: 95%;
-  padding: 0 5px;
+.fiveDescriptionWrapper {
+  width: 175%; /* Slightly wider than the card */
   text-align: center;
 }
 
-.cardName {
-  font-size: 14px;
-  color: #FFFFFF;
-  text-align: center;
+/* Default font sizes */
+.fiveCardName {
+  font-size: 12px;
+  color: #ffffff;
+  font-family: "Cinzel Decorative", serif;
   font-weight: bold;
-  margin-bottom: 0;
 }
 
-.cardDescription {
-  font-size: 10px;
-  color: white;
-  font-weight: 700;
-  width: 20%;
-  text-align: center;
+.fiveCardDescription {
+  font-size: 12px;
+  color: #ffffff;
+}
+
+/* Adjust font sizes for larger screens */
+@media (min-width: 900px) {
+  .fiveCardName {
+    font-size: 14px;
+  }
+
+  .fiveCardDescription {
+    font-size: 12px;
+  }
+}
+
+/* Adjust font sizes for very large screens */
+@media (min-width: 1200px) {
+  .fiveCardName {
+    font-size: 16px;
+  }
+
+  .fiveCardDescription {
+    font-size: 16px;
+  }
+}
+
+/* Adjust font sizes for smaller mobile screens */
+@media (max-width: 600px) {
+  .fiveCardName {
+    font-size: 10px;
+  }
+
+  .fiveCardDescription {
+    font-size: 8px;
+  }
 }

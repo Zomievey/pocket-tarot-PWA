@@ -3,7 +3,7 @@ import { tarotDeck } from "../../classes/TarotDeck";
 import "./FiveCardStyles.css";
 import "../../index.css";
 import { useDeck } from "../../services/DeckContext";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 type TarotCard = {
   name: string;
@@ -24,8 +24,7 @@ export default function FiveCard() {
   const [cardCount, setCardCount] = useState(0);
   const { cardBack } = useDeck();
   const backgroundImage = "/assets/images/five.jpg";
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
 
   const isCardAlreadyDrawn = (card: TarotCard) => {
     return cards.some((drawnCard) => drawnCard.card.name === card.name);
@@ -74,13 +73,13 @@ export default function FiveCard() {
 
   return (
     <div
-      className='background'
+      className="fiveCardBackground"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <button className='backButton' onClick={() => navigate("/")}>
+      <button className="backButton" onClick={() => navigate("/")}>
         ← Home
       </button>
-      <div className='fiveCardWrapper'>
+      <div className="fiveCardWrapper">
         {Array.from({ length: 5 }).map((_, index) => {
           const card = cards[index];
           const isActive = index === activeCardIndex;
@@ -90,54 +89,37 @@ export default function FiveCard() {
               key={card ? card.card.name : index}
               onClick={() => handleCardPress(index)}
               disabled={!card?.flipped}
-              className='fiveCardContainer'
-              style={{
-                zIndex: isActive ? 100 : 1,
-                transform: isActive ? "scale(1.2)" : "scale(1)",
-              }}
+              className={`fiveCardContainer ${isActive ? "activeCard" : ""}`}
             >
-              <div
-                className='cardImageWrapper'
-                style={{
-                  opacity: card ? 0 : 1,
-                  position: "absolute",
-                }}
-              >
-                <img src={cardBack} alt='Card Back' className='fiveCardImage' />
-              </div>
-
-              <div
-                className='cardImageWrapper'
-                style={{
-                  opacity: card ? 1 : 0,
-                  position: "absolute",
-                }}
-              >
+              <div className="fiveCardImageWrapper">
+                {/* Card Back */}
+                <img
+                  src={cardBack}
+                  alt="Card Back"
+                  className="fiveCardImage"
+                  style={{ display: card ? "none" : "block" }}
+                />
+                {/* Card Front */}
                 {card && (
                   <img
                     src={card.card.image}
                     alt={card.card.name}
-                    className='fiveCardImage'
+                    className="fiveCardImage"
                     style={{
-                      transform: card.isReversed
-                        ? "rotate(180deg)"
-                        : "rotate(0deg)",
+                      transform: card.isReversed ? "rotate(180deg)" : "rotate(0deg)",
                     }}
                   />
                 )}
               </div>
 
+              {/* Description below the card image */}
               {card && isActive && (
-                <div className='descriptionWrapper'>
-                  <h3 className='cardName'>
-                    {card.isReversed
-                      ? `${card.card.name} Reversed`
-                      : card.card.name}
+                <div className="fiveDescriptionWrapper">
+                  <h3 className="fiveCardName">
+                    {card.isReversed ? `${card.card.name} Reversed` : card.card.name}
                   </h3>
-                  <p className='cardDescription'>
-                    {card.isReversed
-                      ? card.card.reversedDescription
-                      : card.card.description}
+                  <p className="fiveCardDescription">
+                    {card.isReversed ? card.card.reversedDescription : card.card.description}
                   </p>
                 </div>
               )}
@@ -146,10 +128,7 @@ export default function FiveCard() {
         })}
       </div>
 
-      <button
-        onClick={cardCount < 5 ? drawCard : resetCards}
-        className='drawButton'
-      >
+      <button onClick={cardCount < 5 ? drawCard : resetCards} className="drawButton">
         {getButtonText()}
       </button>
     </div>
