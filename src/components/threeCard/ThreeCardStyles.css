@@ -93,9 +93,8 @@
 
 .threeDescriptionWrapper {
   width: 100%; /* Full width to center align properly */
-  max-width: 320px;
+  max-width: 85%;
   text-align: center; /* Center text alignment */
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -119,7 +118,7 @@
 }
 
 .resetButton {
-  margin-top: 20px;
+  margin-top: 10px;
   padding: 10px 20px;
   background-color: #1c152a;
   color: #ffffff;

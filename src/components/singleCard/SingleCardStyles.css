@@ -47,6 +47,7 @@
   justify-content: center;
   transform-style: preserve-3d;
   transition: box-shadow 0.3s, transform 0.3s ease;
+  cursor: pointer;
 }
 
 .singleCardImageWrapper.clickable:hover,

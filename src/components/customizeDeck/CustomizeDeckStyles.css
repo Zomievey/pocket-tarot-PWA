@@ -2,40 +2,48 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  padding: 10px; /* Reduced padding to fit content on smaller screens */
   height: 100vh;
-  background-color: #1c152a;
+  background-size: cover;
+  background-position: center;
 }
-
 
 .overlayCustom {
   background-color: rgba(28, 21, 42, 0.7);
   border-radius: 20px;
-  padding: 20px;
+  padding: 20px; /* Reduced padding */
   text-align: center;
-  width: 90%; /* Reduce width for better fit on mobile */
-  max-width: 365px;
-  max-height: 510px;
+  width: 60%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .imageContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap; /* Ensure images wrap on small screens */
-  margin-bottom: 30px;
+  gap: 10px; /* Reduced gap between images */
+  flex-wrap: wrap;
+  margin-bottom: 30px; /* Increased space below image container */
 }
 
 .dynamicImageSize {
-  width: 100px;
-  height: auto;
-  max-width: 150px; /* Set max width */
-  max-height: 200px; /* Limit height for mobile */
+  width: 100px; /* Set fixed width */
+  height: 150px; /* Set fixed height */
   border-radius: 10px;
   border: 2px solid transparent;
   cursor: pointer;
-  object-fit: cover; /* Maintain aspect ratio */
+  object-fit: fill; /* Maintain aspect ratio and crop if needed */
+  transition: box-shadow 0.3s, transform 0.3s ease;
+}
+
+.dynamicImageSize:hover,
+.dynamicImageSize:active {
+  cursor: pointer;
+  box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.4); /* Same shadow effect */
+  transform: scale(1.02); /* Same scaling effect */
 }
 
 .selectedCard {
@@ -46,25 +54,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px; /* Reduced top margin */
 }
 
 .titleCustom {
-  font-size: 30px; /* Adjust for mobile */
+  font-size: clamp(1.8rem, 3vw, 2.5rem); /* Responsive font size */
   color: white;
-  margin-bottom: 20px;
+  font-family: "Cinzel Decorative", serif;
+  margin-bottom: 10px; /* Reduced space below title */
 }
 
 .subtitleCustom {
-  font-size: 18px; /* Adjust for mobile */
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem); /* Responsive font size */
   color: white;
-  margin-bottom: 20px;
 }
 
 .customImageWrapper {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 }
@@ -76,40 +83,71 @@
   color: white;
   cursor: pointer;
   font-size: 20px;
+  transition: color 0.3s;
+}
+
+.deleteIcon:hover {
+  color: #a17bdc;
 }
 
 .uploadButton {
-  margin-top: 10px;
-  padding: 10px;
+  padding: 8px 16px; /* Smaller padding for button */
   background-color: #a17bdc;
-  border-radius: 10px;
+  border-radius: 5px;
   color: white;
-  font-family: "Cinzel Decorative", sans-serif;
+  font-family: "Cinzel Decorative", serif;
+  font-size: clamp(1rem, 2vw, 1.2rem); /* Responsive font size */
   border: none;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-/* Media query for small screens */
-@media (max-width: 600px) {
+.uploadButton:hover {
+  background-color: #6e5ba8;
+}
+
+/* Responsive styling for tablets */
+@media (max-width: 900px) {
+  .overlayCustom {
+    padding: 15px;
+    max-width: 90%;
+  }
   .dynamicImageSize {
     width: 80px;
-    max-width: 100px;
-    max-height: 130px; /* Limit height for mobile */
+    height: 120px;
   }
 
   .titleCustom {
-    font-size: 24px;
+    font-size: 1.8rem;
   }
-
   .subtitleCustom {
-    font-size: 16px;
+    font-size: 1.3rem;
   }
+  .deleteIcon {
+    font-size: 18px;
+  }
+}
 
+/* Responsive styling for mobile */
+@media (max-width: 600px) {
   .overlayCustom {
-    padding: 15px;
-    width: 90%;
+    padding: 10px;
+    width: 75%;
   }
-
+  .dynamicImageSize {
+    width: 70px;
+    height: 105px;
+  }
+  .titleCustom {
+    font-size: 1.5rem;
+  }
+  .subtitleCustom {
+    font-size: 1.1rem;
+  }
+  .uploadButton {
+    padding: 6px 12px; /* Further reduced padding */
+    font-size: 0.9rem; /* Smaller font for mobile button */
+  }
   .deleteIcon {
     font-size: 16px;
   }
