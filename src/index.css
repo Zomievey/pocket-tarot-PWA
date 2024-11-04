@@ -1,3 +1,4 @@
+/* Global styles for full-height content, without scrollbar restriction */
 body,
 html,
 #root {
@@ -7,8 +8,7 @@ html,
     "Helvetica Neue", Arial, sans-serif;
   color: #fff;
   background-color: #1c152a;
-  height: 100%;
-  overflow: hidden;
+  height: 100%; /* Enable full-height */
 }
 
 .homeContainer {
@@ -84,9 +84,10 @@ html,
   color: #a17bdc;
 }
 
+/* Global draw button style */
 .drawButton {
-  position: absolute;
-  bottom: 30px;
+  position: fixed; /* Ensures it's fixed at the bottom of the viewport */
+  bottom: 40px; /* Adjust distance from the bottom */
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 20px;
@@ -98,6 +99,7 @@ html,
   font-family: "Cinzel Decorative", serif;
   font-weight: bold;
   font-size: 18px;
+  z-index: 10; /* Keeps it on top of other elements */
 }
 
 .drawButton:hover {
@@ -110,10 +112,6 @@ html,
     width: 85%; /* Increase width on larger screens */
     max-width: 1000px;
     padding: 60px; /* Optional: add more padding if needed */
-  }
-
-  .drawButton {
-    font-size: 12px;
   }
 
   .title {

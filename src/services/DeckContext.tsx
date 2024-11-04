@@ -35,13 +35,13 @@ export const DeckProvider: React.FC<{ children: React.ReactNode }> = ({
   const [cardBack, setCardBack] = useState<string>(defaultCardBack);
 
   // Function to save card back to localStorage for persistence in the browser
-  const saveCardBackToStorage = async (newCardBack: string) => {
+  const saveCardBackToStorage = useCallback((newCardBack: string) => {
     try {
       localStorage.setItem("cardBack", newCardBack);
     } catch (error) {
       console.error("Error saving cardBack to localStorage:", error);
     }
-  };
+  }, []);
 
   // Load card back from localStorage on component mount
   useEffect(() => {
@@ -50,8 +50,6 @@ export const DeckProvider: React.FC<{ children: React.ReactNode }> = ({
         const storedCardBack = localStorage.getItem("cardBack");
         if (storedCardBack) {
           setCardBack(storedCardBack);
-        } else {
-          setCardBack(defaultCardBack);
         }
       } catch (error) {
         console.error("Error loading cardBack from localStorage:", error);
@@ -62,10 +60,13 @@ export const DeckProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   // Function to update the card back and save it to localStorage
-  const updateCardBack = useCallback((newCardBack: string) => {
-    setCardBack(newCardBack);
-    saveCardBackToStorage(newCardBack);
-  }, []);
+  const updateCardBack = useCallback(
+    (newCardBack: string) => {
+      setCardBack(newCardBack);
+      saveCardBackToStorage(newCardBack);
+    },
+    [saveCardBackToStorage]
+  );
 
   // Memoized value for the context
   const value = React.useMemo(
