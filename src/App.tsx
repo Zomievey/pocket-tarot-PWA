@@ -6,6 +6,7 @@ import ThreeCard from "./components/threeCard/ThreeCard";
 import CustomizeDeck from "./components/customizeDeck/CustomizeDeck";
 import Home from "./Home";
 import { DeckProvider } from "./services/DeckContext";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -49,7 +50,7 @@ function App() {
             <Route path='/customizeDeck' element={<CustomizeDeck />} />
           </Routes>
         </main>
-     
+        <Analytics />
       </Router>
     </DeckProvider>
   );
