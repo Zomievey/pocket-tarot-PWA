@@ -9,6 +9,7 @@ html,
   color: #fff;
   background-color: #1c152a;
   height: 100%; /* Enable full-height */
+  overflow: hidden;
 }
 
 .homeContainer {

@@ -7,13 +7,6 @@
   padding: 20px;
   background-size: cover;
   background-position: center;
-  overflow-y: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.singleContainer::-webkit-scrollbar {
-  display: none;
 }
 
 .singleCardWrapper {
@@ -99,8 +92,6 @@
 .singleCardImageWrapper.revealed .singleCardImage {
   animation: blurReveal 1.5s ease forwards; /* Apply the simplified blur reveal animation */
 }
-
-
 
 .singleReversed {
   transform: rotate(180deg);
