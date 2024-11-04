@@ -89,25 +89,21 @@ html,
   color: #a17bdc;
 }
 
-/* Draw button styling */
-.drawButton {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+.resetButton {
+  margin-top: 50px;
   padding: 10px 20px;
   background-color: #1c152a;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-family: "Cinzel Decorative", serif;
   font-weight: bold;
   font-size: 18px;
-  z-index: 10;
+  transition: background-color 0.3s;
 }
 
-.drawButton:hover {
+.resetButton:hover {
   background-color: #a17bdc;
 }
 

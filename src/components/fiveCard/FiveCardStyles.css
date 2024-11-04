@@ -121,23 +121,6 @@
   text-align: center;
 }
 
-.resetButton {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #1c152a;
-  color: #ffffff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: "Cinzel Decorative", serif;
-  font-weight: bold;
-  font-size: 18px;
-  transition: background-color 0.3s;
-}
-
-.resetButton:hover {
-  background-color: #a17bdc;
-}
 
 /* Responsive styling for tablets */
 @media (max-width: 900px) {
