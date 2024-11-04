@@ -2,42 +2,89 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Start content closer to the top */
-  height: 100vh; /* Full viewport height */
-  padding-top: 60px; /* Adjust padding as needed */
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
   background-size: cover;
   background-position: center;
 }
 
 .threeCardWrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+  max-width: 900px;
+  padding-bottom: 40px;
+  gap: 10px; /* Add space between cards */
 }
 
 .threeCardContainer {
-  width: 25vw;
+  width: 30%; /* Use percentage-based width for responsive scaling */
+  max-width: 280px;
   aspect-ratio: 2 / 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  margin-left: 10px;
+  margin-top: 20px;
 }
 
 .threeCardImageWrapper {
   position: relative;
-  width: 85%;
+  width: 100%;
   aspect-ratio: 2 / 3;
   border-radius: 5px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: box-shadow 0.3s, transform 0.3s ease;
+  cursor: pointer;
 }
 
-.threeCardImage {
+.threeCardImageWrapper.clickable:hover,
+.threeCardImageWrapper.clickable:active {
+  cursor: pointer;
+  box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.4);
+  transform: scale(1.02);
+}
+
+.threeCardImage,
+.threeCardBackImage {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: fill;
+  border-radius: 5px;
+  transition: opacity 0.6s ease;
+}
+
+.threeCardBackImage {
+  opacity: 1;
+  z-index: 1;
+}
+
+.threeCardImageWrapper.revealed .threeCardBackImage {
+  opacity: 0;
+}
+
+/* Apply the blur reveal effect only when the blurReveal class is active */
+@keyframes blurReveal {
+  0% {
+    opacity: 0;
+    filter: blur(10px); /* Start with a strong blur */
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0); /* End with no blur */
+  }
+}
+
+.blurRevealAnimation {
+  animation: blurReveal 1.5s ease forwards;
 }
 
 .threeReversed {
@@ -45,54 +92,78 @@
 }
 
 .threeDescriptionWrapper {
+  width: 100%; /* Full width to center align properly */
+  max-width: 320px;
+  text-align: center; /* Center text alignment */
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  width: 25vw;
-  text-align: center;
-  margin-top: 10px;
+  justify-content: center;
 }
 
-/* Default font sizes */
 .threeCardName {
-  font-size: 18px;
+  font-size: clamp(1.3rem, 3vw, 2rem);
   color: #ffffff;
   font-family: "Cinzel Decorative", serif;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin: 0;
+  text-align: center; /* Ensure centered text alignment */
 }
 
 .threeCardDescription {
-  font-size: 14px;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
   color: #ffffff;
+  line-height: 1.5;
+  text-align: center; /* Ensure centered text alignment */
 }
 
-/* Adjust font sizes for larger screens */
+.resetButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #1c152a;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
 
-/* Adjust font sizes for very large screens */
-@media (min-width: 1200px) {
-  .threeCardName {
-    font-size: 32px;
+.resetButton:hover {
+  background-color: #a17bdc;
+}
+
+/* Responsive styling for tablets */
+@media (max-width: 900px) {
+  .threeCardContainer {
+    width: 28%; /* Reduce card width to fit all in a row on tablet */
   }
-
-  .threeCardDescription {
-    font-size: 24px;
+  .threeCardWrapper {
+    gap: 8px; /* Adjust gap to maintain spacing */
+  }
+  .threeDescriptionWrapper {
+    width: 85vw;
   }
 }
-@media (min-width: 900px) {
-  .threeCardName {
-    font-size: 26px;
-  }
 
-  .threeCardDescription {
-    font-size: 20px;
-  }
-}
-/* Adjust font sizes for smaller mobile screens */
+/* Responsive styling for mobile */
 @media (max-width: 600px) {
-  .threeCardName {
-    font-size: 16px;
+  .threeCardContainer {
+    width: 30%; /* Further reduce card width to fit all in a row on mobile */
   }
-
+  .threeCardWrapper {
+    gap: 5px; /* Narrower gap on mobile */
+  }
+  .threeDescriptionWrapper {
+    width: 90vw;
+  }
+  .threeCardName {
+    font-size: 1.3rem;
+  }
   .threeCardDescription {
-    font-size: 12px;
+    font-size: 1rem;
   }
 }
