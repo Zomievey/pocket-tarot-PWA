@@ -1,4 +1,4 @@
-/* Global styles for full-height content, without scrollbar restriction */
+/* Global styles for full-height content */
 body,
 html,
 #root {
@@ -8,19 +8,20 @@ html,
     "Helvetica Neue", Arial, sans-serif;
   color: #fff;
   background-color: #1c152a;
-  height: 100%; /* Enable full-height */
+  height: 100%;
   overflow: hidden;
 }
 
+/* Home container */
 .homeContainer {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Full viewport height */
+  min-height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  align-items: center; /* Centers the content horizontally */
-  justify-content: center; /* Centers the content vertically */
+  align-items: center;
+  justify-content: center;
 }
 
 .overlayContainer {
@@ -30,31 +31,33 @@ html,
   justify-content: center;
   width: 100%;
   text-align: center;
-  flex-grow: 1; /* Ensures overlayContainer takes up available vertical space */
+  flex-grow: 1;
 }
 
 .overlay {
   background: rgba(28, 21, 42, 0.7);
   padding: 40px;
   border-radius: 10px;
-  width: 90%; /* Default width for mobile */
+  width: 90%;
   max-width: 800px;
   text-align: center;
 }
 
+/* Title styling with responsive font sizes */
 .title {
-  font-size: 4.8em;
+  font-size: clamp(2.5rem, 5vw, 4.8rem);
   font-weight: bold;
   color: #fff;
   font-family: "Cinzel Decorative", serif;
   margin-bottom: 20px;
 }
 
+/* Link styling with increased spacing */
 .link-text {
-  font-size: 2em;
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
   color: #fff;
   text-decoration: none;
-  margin: 15px 0;
+  margin: 35px 0; /* Increased margin for more space between links */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,6 +72,7 @@ html,
   margin-right: 8px;
 }
 
+/* Back button styling */
 .backButton {
   position: absolute;
   top: 20px;
@@ -85,10 +89,10 @@ html,
   color: #a17bdc;
 }
 
-/* Global draw button style */
+/* Draw button styling */
 .drawButton {
-  position: fixed; /* Ensures it's fixed at the bottom of the viewport */
-  bottom: 40px; /* Adjust distance from the bottom */
+  position: fixed;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 20px;
@@ -100,30 +104,38 @@ html,
   font-family: "Cinzel Decorative", serif;
   font-weight: bold;
   font-size: 18px;
-  z-index: 10; /* Keeps it on top of other elements */
+  z-index: 10;
 }
 
 .drawButton:hover {
   background-color: #a17bdc;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for tablets */
+@media (max-width: 900px) {
+  .overlay {
+    padding: 60px;
+    width: 85%;
+  }
+  .title {
+    font-size: 3rem;
+  }
+  .link-text {
+    font-size: 1.7rem;
+  }
+}
+
+/* Responsive adjustments for mobile */
 @media (max-width: 600px) {
   .overlay {
-    width: 85%; /* Increase width on larger screens */
-    max-width: 1000px;
-    padding: 60px; /* Optional: add more padding if needed */
-  }
-
-  .title {
-    font-size: 2.5em;
-  }
-
-  .link-text {
-    font-size: 1.3em;
-  }
-
-  .overlay {
     width: 90%;
+    padding: 40px;
+  }
+  .title {
+    font-size: 2.5rem;
+  }
+  .link-text {
+    font-size: 1.3rem;
+    margin: 25px 0; /* Slightly reduce margin for mobile */
   }
 }
