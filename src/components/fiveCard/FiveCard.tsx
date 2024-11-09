@@ -3,6 +3,7 @@ import { tarotDeck } from "../../classes/TarotDeck";
 import "./FiveCardStyles.css";
 import { useDeck } from "../../services/DeckContext";
 import { useNavigate } from "react-router-dom";
+import { useJournal } from "../../services/JournalContext"; // Import useJournal
 
 type TarotCard = {
   name: string;
@@ -27,40 +28,17 @@ export default function FiveCard() {
       blurReveal: boolean;
     }[]
   >([
-    {
-      card: placeholderCard,
-      isReversed: false,
-      isRevealed: false,
-      blurReveal: false,
-    },
-    {
-      card: placeholderCard,
-      isReversed: false,
-      isRevealed: false,
-      blurReveal: false,
-    },
-    {
-      card: placeholderCard,
-      isReversed: false,
-      isRevealed: false,
-      blurReveal: false,
-    },
-    {
-      card: placeholderCard,
-      isReversed: false,
-      isRevealed: false,
-      blurReveal: false,
-    },
-    {
-      card: placeholderCard,
-      isReversed: false,
-      isRevealed: false,
-      blurReveal: false,
-    },
+    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
   ]);
 
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
+  const [isSaved, setIsSaved] = useState(false); // Track if the reading is saved
   const { cardBack } = useDeck();
+  const { addEntry } = useJournal(); // Access addEntry from JournalContext
   const navigate = useNavigate();
   const backgroundImage = "/assets/images/five.jpg";
 
@@ -73,7 +51,6 @@ export default function FiveCard() {
 
     if (updatedCards[index].isRevealed) {
       setActiveCardIndex(index);
-
       updatedCards[index].blurReveal = false;
       setCards([...updatedCards]);
 
@@ -105,60 +82,50 @@ export default function FiveCard() {
 
   const resetCards = () => {
     setCards([
-      {
-        card: placeholderCard,
-        isReversed: false,
-        isRevealed: false,
-        blurReveal: false,
-      },
-      {
-        card: placeholderCard,
-        isReversed: false,
-        isRevealed: false,
-        blurReveal: false,
-      },
-      {
-        card: placeholderCard,
-        isReversed: false,
-        isRevealed: false,
-        blurReveal: false,
-      },
-      {
-        card: placeholderCard,
-        isReversed: false,
-        isRevealed: false,
-        blurReveal: false,
-      },
-      {
-        card: placeholderCard,
-        isReversed: false,
-        isRevealed: false,
-        blurReveal: false,
-      },
+      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
     ]);
     setActiveCardIndex(null);
+    setIsSaved(false); // Reset save status on reset
   };
 
   const allCardsRevealed = cards.every((card) => card.isRevealed);
 
+  const saveToJournal = () => {
+    addEntry({
+      type: "Five Card Reading",
+      timestamp: Date.now(),
+      cards: cards.map(({ card, isReversed }) => ({
+        title: isReversed ? `${card.name} Reversed` : card.name,
+        image: card.image,
+      })),
+      notes: "",
+    });
+    setIsSaved(true);
+  };
+
   return (
     <div
-      className='fiveContainer'
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      className="fiveContainer"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
     >
-      <button className='backButton' onClick={() => navigate("/")}>
-        ← Home
+      <button className="backButton" onClick={() => navigate("/")}>
+        Home
       </button>
-      <div className='fiveCardWrapper'>
+      <div className="fiveCardWrapper">
         {Array.from({ length: 5 }).map((_, index) => {
           const card = cards[index];
           return (
-            <div
-              key={index}
-              className={`fiveCardContainer ${
-                index === activeCardIndex ? "activeCard" : ""
-              }`}
-            >
+            <div key={index} className="fiveCardContainer">
               <div
                 className={`fiveCardImageWrapper ${
                   card?.isRevealed ? "revealed" : "clickable"
@@ -168,8 +135,8 @@ export default function FiveCard() {
                 {!card?.isRevealed ? (
                   <img
                     src={cardBack}
-                    alt='Card Back'
-                    className='fiveCardBackImage'
+                    alt="Card Back"
+                    className="fiveCardBackImage"
                   />
                 ) : (
                   card.card && (
@@ -194,30 +161,35 @@ export default function FiveCard() {
         })}
       </div>
 
-      <div className='centeredDescriptionWrapper'>
-        {activeCardIndex !== null && (
-          <>
-            <h2 className='fiveCardName'>
-              {cards[activeCardIndex].isReversed
-                ? `${cards[activeCardIndex].card.name} Reversed`
-                : cards[activeCardIndex].card.name}
-            </h2>
-            <p className='fiveCardDescription'>
-              {cards[activeCardIndex].isReversed
-                ? cards[activeCardIndex].card.reversedDescription
-                : cards[activeCardIndex].card.description}
-            </p>
-          </>
-        )}
-      </div>
+      {activeCardIndex !== null && (
+        <div className="centeredDescriptionWrapper">
+          <h2 className="fiveCardName">
+            {cards[activeCardIndex].isReversed
+              ? `${cards[activeCardIndex].card.name} Reversed`
+              : cards[activeCardIndex].card.name}
+          </h2>
+          <p className="fiveCardDescription">
+            {cards[activeCardIndex].isReversed
+              ? cards[activeCardIndex].card.reversedDescription
+              : cards[activeCardIndex].card.description}
+          </p>
+        </div>
+      )}
 
-      <div className='resetButtonContainer'>
-        {allCardsRevealed && (
-          <button onClick={resetCards} className='resetButton'>
+      {allCardsRevealed && (
+        <div>
+          <button
+            className="saveToJournalButton"
+            onClick={saveToJournal}
+            disabled={isSaved} // Disable if saved
+          >
+            {isSaved ? "Saved to Journal" : "Save to Journal"}
+          </button>
+          <button className="resetButton" onClick={resetCards}>
             Reset
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

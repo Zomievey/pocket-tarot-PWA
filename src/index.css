@@ -9,7 +9,7 @@ html,
   color: #fff;
   background-color: #1c152a;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* Home container */
@@ -83,6 +83,7 @@ html,
   font-size: 1.2em;
   cursor: pointer;
   font-family: "Cinzel Decorative", serif;
+  z-index: 1;
 }
 
 .backButton:hover {
@@ -99,12 +100,36 @@ html,
   cursor: pointer;
   font-family: "Cinzel Decorative", serif;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   transition: background-color 0.3s;
 }
 
 .resetButton:hover {
   background-color: #a17bdc;
+}
+
+.saveToJournalButton {
+  margin-top: 50px;
+  margin-right: 10px;
+  padding: 10px 20px;
+  background-color: #1c152a;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.saveToJournalButton:hover:enabled {
+  background-color: #a17bdc;
+}
+
+.saveToJournalButton:disabled {
+  background-color: #ccc;
+  cursor: none;
 }
 
 /* Responsive adjustments for tablets */

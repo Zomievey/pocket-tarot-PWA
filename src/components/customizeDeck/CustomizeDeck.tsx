@@ -62,11 +62,13 @@ export default function CustomizeDeck() {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
       }}
     >
       {/* Back Button */}
       <button className='backButton' onClick={() => navigate("/")}>
-        ← Home
+        Home
       </button>
 
       <div className='overlayContainer'>

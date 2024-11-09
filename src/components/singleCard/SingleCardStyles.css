@@ -119,6 +119,7 @@
   line-height: 1.5;
 }
 
+
 @media (max-width: 900px) {
   .singleCardContainer {
     width: 60vw; /* Increase width to make the card larger on tablet */
@@ -144,3 +145,5 @@
     font-size: 1rem;
   }
 }
+
+
