@@ -1,8 +1,8 @@
+// JournalContext.tsx
 import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
   ReactNode,
   useMemo,
@@ -16,29 +16,27 @@ import {
   updateDoc,
   Timestamp,
 } from "firebase/firestore";
-
 import { db } from "./firebaseConfig";
+import { useAuth } from "./AuthContext"; // Import AuthContext to access uid
 
 type JournalEntry = {
-    id?: string; // Firestore document ID
-    type: "Card of the Day" | "Three Card Reading" | "Five Card Reading";
-    timestamp: number;
-    cards: { // Use an array of cards to support multi-card readings
-      image: string;
-      title: string;
-    }[];
-    notes: string;
-  };
-  
+  id?: string;
+  type: "Card of the Day" | "Three Card Reading" | "Five Card Reading";
+  timestamp: number;
+  userId: string;
+  cards: {
+    image: string;
+    title: string;
+  }[];
+  notes: string;
+};
 
 export const JournalContext = createContext<{
   journalEntries: JournalEntry[];
-  addEntry: (entry: JournalEntry) => Promise<void>;
+  addEntry: (entry: Omit<JournalEntry, "timestamp" | "userId">) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
-  updateEntry: (
-    id: string,
-    updatedData: Partial<JournalEntry>
-  ) => Promise<void>;
+  updateEntry: (id: string, updatedData: Partial<JournalEntry>) => Promise<void>;
+  fetchUserEntries: () => Promise<void>;
   loading: boolean;
   error: string | null;
 }>({
@@ -46,6 +44,7 @@ export const JournalContext = createContext<{
   addEntry: async () => {},
   deleteEntry: async () => {},
   updateEntry: async () => {},
+  fetchUserEntries: async () => {},
   loading: false,
   error: null,
 });
@@ -53,50 +52,55 @@ export const JournalContext = createContext<{
 export const useJournal = () => useContext(JournalContext);
 
 export const JournalProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth(); // Access the authenticated user
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch entries from Firestore on component mount
-  useEffect(() => {
-    const fetchEntries = async () => {
-      setLoading(true);
-      try {
-        const querySnapshot = await getDocs(collection(db, "journalEntries"));
-        const entries = querySnapshot.docs.map((doc) => ({
-          id: doc.id, // Store Firestore document ID
-          ...doc.data(),
-        })) as JournalEntry[];
-        setJournalEntries(entries);
-      } catch (err) {
-        setError("Failed to load journal entries.");
-        console.error("Error fetching entries:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEntries();
-  }, []);
+  const fetchUserEntries = useCallback(async () => {
+    if (!user?.uid) return; // Check if uid is available
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "journalEntries"));
+      const userEntries = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as JournalEntry),
+        }))
+        .filter((entry) => entry.userId === user.uid);
+      setJournalEntries(userEntries);
+    } catch (err) {
+      setError("Failed to load journal entries.");
+      console.error("Error fetching entries:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.uid]);
 
   const addEntry = useCallback(
-    async (entry: Omit<JournalEntry, "timestamp">) => {
-      // Exclude 'timestamp' from input entry type
+    async (entry: Omit<JournalEntry, "timestamp" | "userId">) => {
+      if (!user?.uid) return; // Check if uid is available
       try {
         const docRef = await addDoc(collection(db, "journalEntries"), {
           ...entry,
-          timestamp: Timestamp.now(), // Set timestamp here
+          userId: user.uid,
+          timestamp: Timestamp.now(),
         });
         setJournalEntries([
-          { id: docRef.id, ...entry, timestamp: Timestamp.now().toMillis() },
+          {
+            id: docRef.id,
+            ...entry,
+            userId: user.uid,
+            timestamp: Timestamp.now().toMillis(),
+          },
           ...journalEntries,
-        ]); // Add entry with ID and timestamp in milliseconds
+        ]);
       } catch (err) {
         setError("Failed to add journal entry.");
         console.error("Error adding entry:", err);
       }
     },
-    [journalEntries]
+    [journalEntries, user?.uid]
   );
 
   const deleteEntry = useCallback(
@@ -136,10 +140,19 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
       addEntry,
       deleteEntry,
       updateEntry,
+      fetchUserEntries,
       loading,
       error,
     }),
-    [journalEntries, addEntry, deleteEntry, updateEntry, loading, error]
+    [
+      journalEntries,
+      addEntry,
+      deleteEntry,
+      updateEntry,
+      fetchUserEntries,
+      loading,
+      error,
+    ]
   );
 
   return (

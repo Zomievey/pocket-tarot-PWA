@@ -1,0 +1,128 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #5d3c7d;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 370px;
+  width: 90%;
+  color: #fff;
+}
+
+.title {
+  font-family: "Cinzel Decorative", serif;
+  font-size: 38px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.error-message {
+  color: #ff7b7b; /* Soft red for error messages */
+  font-size: 14px;
+  margin-top: 5px; /* Aligns with the other error messages */
+  margin-bottom: 5px; /* Space above the next element */
+  text-align: center; /* Center the error message text */
+}
+
+
+.login-button {
+  margin-top: 15px;
+  padding: 12px 20px;
+  background-color: #1c152a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  width: 60%;
+}
+
+.login-button:hover {
+  background-color: #7e57c2;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 90%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  background-color: #6c4889;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+input::placeholder {
+  color: #ddd;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 35px; /* Adjusted margin */
+  display: block;
+  text-align: center;
+}
+
+.toggle-button:hover {
+  color: #fff;
+}
+
+.toggle-button span {
+  text-decoration: underline;
+}
+
+/* Centered reset button directly below toggle button */
+.reset-button {
+  background: none;
+  color: #ddd;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 5px; /* Reduced margin to bring closer to toggle button */
+  text-align: center;
+  display: block;
+}
+
+.reset-button:hover {
+  color: #ffffff;
+}
+
+.error-message {
+  color: #ff7b7b;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.reset-message {
+  color: #a3ffa3; /* Light green for success */
+  font-size: 14px;
+  margin-top: 10px;
+}

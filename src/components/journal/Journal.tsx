@@ -1,41 +1,47 @@
-import React, { useState } from "react";
+// Journal.tsx
+import React, { useState, useEffect } from "react";
 import { useJournal } from "../../services/JournalContext";
+import { useAuth } from "../../services/AuthContext"; // Use Auth context for uid
 import "./JournalStyles.css";
 import { useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 
 export default function Journal() {
-  const { journalEntries, deleteEntry, updateEntry } = useJournal();
+  const { user } = useAuth(); // Get user object from Auth context
+  const userId = user?.uid; // Use Firebase Auth uid
+  const { journalEntries, deleteEntry, updateEntry, fetchUserEntries } =
+    useJournal();
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
   const [currentNote, setCurrentNote] = useState<string>("");
 
-  // Filter state
   const [filterType, setFilterType] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-
-  const [showFilter, setShowFilter] = useState(false); // State for toggling modal visibility
+  const [showFilter, setShowFilter] = useState(false);
 
   const backgroundImage = "/assets/images/main-background.png";
   const navigate = useNavigate();
 
-  // Helper function to check if a value is a Firestore Timestamp
+  // Fetch entries only if userId is available
+  useEffect(() => {
+    if (userId) {
+      fetchUserEntries();
+    }
+    localStorage.removeItem("userId");
+  }, [userId, fetchUserEntries]);
+
   const isFirestoreTimestamp = (value: any): value is Timestamp => {
     return value instanceof Timestamp;
   };
 
-  // Convert entry timestamp to a JavaScript Date for comparison
   const convertTimestamp = (timestamp: number | Timestamp) =>
     isFirestoreTimestamp(timestamp) ? timestamp.toDate() : new Date(timestamp);
 
-  // Apply filters to journal entries
   const filteredEntries = journalEntries.filter((entry) => {
+    if (entry.userId !== userId) return false; // Filter by the authenticated user's id
     const entryDate = convertTimestamp(entry.timestamp);
 
-    // Check type filter
     if (filterType && entry.type !== filterType) return false;
-
-    // Check date range filter
     if (startDate && new Date(startDate) > entryDate) return false;
     if (endDate && new Date(endDate) < entryDate) return false;
 
@@ -78,29 +84,29 @@ export default function Journal() {
         Home
       </button>
 
-      {/* Conditionally render the filter button only if there are entries */}
-      {journalEntries.length > 0 && (
+      {filteredEntries.length > 0 && (
         <button
           className='filter-button'
           onClick={() => setShowFilter(!showFilter)}
         >
-          Filter<br/>Entries
+          Filter Entries
         </button>
       )}
 
-      {/* Modal overlay */}
-      <div
-        className={`modal-overlay ${showFilter ? "active" : ""}`}
-        onClick={() => setShowFilter(false)} // Close modal when clicking on overlay
-      />
+      {showFilter && (
+        <div
+          className='modal-overlay-journal active'
+          onClick={() => setShowFilter(false)}
+        />
+      )}
 
-      {/* Filter modal container */}
       <div className={`filter-container ${showFilter ? "active" : ""}`}>
-        {/* Close button */}
-        <button className='modal-close' onClick={() => setShowFilter(false)}>
+        <button
+          className='modal-journal-close'
+          onClick={() => setShowFilter(false)}
+        >
           &times;
         </button>
-
         <div>
           <label>Type:</label>
           <select
@@ -150,37 +156,27 @@ export default function Journal() {
           <p>No journal entries yet. Save a card reading to see it here!</p>
         ) : (
           filteredEntries.map((entry) => (
-            <div className='journal-entry'>
+            <div className='journal-entry' key={entry.id}>
               <h2 className='journal-entry-title'>{entry.type} Reading</h2>
               <p>
-                {(isFirestoreTimestamp(entry.timestamp)
-                  ? entry.timestamp.toDate()
-                  : new Date(entry.timestamp)
-                ).toLocaleDateString()}{" "}
-                {(isFirestoreTimestamp(entry.timestamp)
-                  ? entry.timestamp.toDate()
-                  : new Date(entry.timestamp)
-                ).toLocaleTimeString([], {
+                {convertTimestamp(entry.timestamp).toLocaleDateString()}{" "}
+                {convertTimestamp(entry.timestamp).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
               </p>
-
               <div className='card-group'>
-                {entry.cards &&
-                  entry.cards.map((card, index) => (
-                    <div key={index} className='card-image-container'>
-                      <img
-                        src={card.image}
-                        alt={card.title}
-                        className='card-image'
-                      />
-                      <p>{card.title}</p>
-                    </div>
-                  ))}
+                {entry.cards?.map((card, index) => (
+                  <div key={index} className='card-image-container'>
+                    <img
+                      src={card.image}
+                      alt={card.title}
+                      className='card-image'
+                    />
+                    <p>{card.title}</p>
+                  </div>
+                ))}
               </div>
-
-              {/* Notes and buttons */}
               {editingIndex === entry.id ? (
                 <div>
                   <textarea

@@ -123,13 +123,13 @@ export default function ThreeCard() {
   const saveToJournal = () => {
     addEntry({
       type: "Three Card Reading",
-      timestamp: Date.now(),
       cards: cards.map(({ card, isReversed }) => ({
         title: isReversed ? `${card.name} Reversed` : card.name,
         image: card.image,
       })),
       notes: "",
     });
+    
     setIsSaved(true);
   };
 

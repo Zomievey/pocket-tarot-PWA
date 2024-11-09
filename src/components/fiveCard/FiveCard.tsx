@@ -97,13 +97,13 @@ export default function FiveCard() {
   const saveToJournal = () => {
     addEntry({
       type: "Five Card Reading",
-      timestamp: Date.now(),
       cards: cards.map(({ card, isReversed }) => ({
         title: isReversed ? `${card.name} Reversed` : card.name,
         image: card.image,
       })),
       notes: "",
     });
+    
     setIsSaved(true);
   };
 

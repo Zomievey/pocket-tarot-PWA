@@ -87,14 +87,14 @@
 }
 
 /* Modal overlay */
-.modal-overlay {
+.modal-overlay-journal {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 999;
 }
 
@@ -103,11 +103,11 @@
 }
 
 /* Show overlay when active */
-.modal-overlay.active {
+.modal-overlay-journal.active {
   display: block;
 }
 /* Modal close button */
-.modal-close {
+.modal-journal-close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -119,7 +119,7 @@
   z-index: 1001;
 }
 
-.modal-close:hover {
+.modal-journal-close:hover {
   color: #a17bdc;
 }
 

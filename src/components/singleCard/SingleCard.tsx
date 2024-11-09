@@ -54,15 +54,15 @@ export default function SingleCard() {
     if (card.card) {
       addEntry({
         type: "Card of the Day",
-        timestamp: Date.now(),
         cards: [
           {
             image: card.card.image,
             title: card.isReversed ? `${card.card.name} Reversed` : card.card.name,
           },
         ],
-        notes: "", 
+        notes: "",
       });
+      
       setIsSaved(true); 
     }
   };
