@@ -15,6 +15,7 @@ import { Analytics } from "@vercel/analytics/react";
 import Journal from "./components/journal/Journal";
 import { JournalProvider } from "./services/JournalContext";
 import { AuthProvider } from "./services/AuthContext";
+import { PaymentProvider } from "./services/PaymentContext"; // Import PaymentProvider
 import Home from "./components/home/Home";
 
 function AppRoutes() {
@@ -61,14 +62,16 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <JournalProvider>
-          <DeckProvider>
-            <main style={{ flex: 1 }}>
-              <AppRoutes />
-            </main>
-            <Analytics />
-          </DeckProvider>
-        </JournalProvider>
+        <PaymentProvider> {/* Wrap PaymentProvider here */}
+          <JournalProvider>
+            <DeckProvider>
+              <main style={{ flex: 1 }}>
+                <AppRoutes />
+              </main>
+              <Analytics />
+            </DeckProvider>
+          </JournalProvider>
+        </PaymentProvider>
       </AuthProvider>
     </Router>
   );

@@ -1,8 +1,6 @@
-// AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./firebaseConfig";
-import { FirebaseError } from "firebase/app"; // Import FirebaseError to handle specific errors
-
+import { FirebaseError } from "firebase/app";
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -12,16 +10,19 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { doc, setDoc, updateDoc } from "firebase/firestore"; // Removed getDoc
+import { db } from "./firebaseConfig";
 
 type AuthContextType = {
   user: any;
   loading: boolean;
+  error: string | null; // Added error here
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   googleLogin: () => Promise<void>;
   logout: () => Promise<void>;
-  error: string | null;
   resetPassword: (email: string) => Promise<void>;
+  updateJournalAccess: () => Promise<void>; // New function to update access
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,7 +39,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthenticating, setIsAuthenticating] = useState(false); // Track login state
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -56,19 +56,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setError("Failed to log in. Please check your credentials.");
     }
   };
+
   const register = async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userId = userCredential.user.uid;
+      await setDoc(doc(db, "users", userId), { email, hasJournalAccess: true });
+      setUser(userCredential.user);
     } catch (err) {
       if (err instanceof FirebaseError) {
         switch (err.code) {
           case "auth/email-already-in-use":
-            setError(
-              "This email is already registered. Please log in or use a different email."
-            );
+            setError("This email is already registered.");
             break;
           case "auth/weak-password":
-            setError("Password should be at least 6 characters long.");
+            setError("Password should be at least 6 characters.");
             break;
           case "auth/invalid-email":
             setError("Please enter a valid email address.");
@@ -77,31 +79,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setError("An error occurred. Please try again.");
         }
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setError("An unexpected error occurred.");
+      }
+    }
+  };
+
+  const updateJournalAccess = async () => {
+    if (user?.uid) {
+      try {
+        await updateDoc(doc(db, "users", user.uid), { hasJournalAccess: true });
+      } catch (error) {
+        console.error("Failed to update journal access:", error);
       }
     }
   };
 
   const googleLogin = async () => {
-    if (isAuthenticating) return; // Prevent multiple login attempts
-    setIsAuthenticating(true); // Set authenticating state
-
-    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-    } catch (error: any) {
-      console.error("Google login error:", error);
-
-      // Handle specific error codes
-      if (error.code === "auth/cancelled-popup-request") {
-        setError("A sign-in attempt was already in progress.");
-      } else if (error.code === "auth/popup-blocked") {
-        setError("Popup blocked. Please allow popups for this site.");
-      } else {
-        setError("Failed to log in with Google. Please try again.");
-      }
-    } finally {
-      setIsAuthenticating(false); // Reset authenticating state
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (error) {
+      console.error("Failed Google login:", error);
+      setError("Failed to log in with Google. Please try again.");
     }
   };
 
@@ -130,6 +128,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         googleLogin,
         logout,
         resetPassword,
+        updateJournalAccess,
       }}
     >
       {children}
