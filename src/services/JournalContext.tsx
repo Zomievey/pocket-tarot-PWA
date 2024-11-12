@@ -1,22 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  ReactNode,
-  useMemo,
-  useEffect,
-} from "react";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-  Timestamp,
-  getDoc,
-} from "firebase/firestore";
+import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect } from "react";
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, Timestamp, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import { useAuth } from "./AuthContext";
 
@@ -34,14 +17,9 @@ type JournalEntry = {
 
 export const JournalContext = createContext<{
   journalEntries: JournalEntry[];
-  addEntry: (
-    entry: Omit<JournalEntry, "timestamp" | "userId">
-  ) => Promise<void>;
+  addEntry: (entry: Omit<JournalEntry, "timestamp" | "userId">) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
-  updateEntry: (
-    id: string,
-    updatedData: Partial<JournalEntry>
-  ) => Promise<void>;
+  updateEntry: (id: string, updatedData: Partial<JournalEntry>) => Promise<void>;
   fetchUserEntries: () => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -67,18 +45,19 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
   const [hasAccess, setHasAccess] = useState(false);
   const [userEntryCount, setUserEntryCount] = useState(0);
 
+  // Fetch access status on component mount or user change
   useEffect(() => {
     const checkUserAccess = async () => {
       if (user?.uid) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        const userAccess =
-          userDoc.exists() && userDoc.data()?.hasJournalAccess === true;
+        const userAccess = userDoc.exists() && userDoc.data()?.hasJournalAccess === true;
         setHasAccess(userAccess);
       }
     };
     checkUserAccess();
   }, [user]);
 
+  // Fetch user's journal entries
   const fetchUserEntries = useCallback(async () => {
     if (!user?.uid) return;
 
@@ -94,18 +73,16 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
 
       setJournalEntries(userEntries);
       setUserEntryCount(userEntries.length);
-
-      if (userEntries.length > 0 && !hasAccess) {
-        setError("Upgrade to add more entries.");
-      }
+      setError(null); // Clear any existing error on successful fetch
     } catch (err) {
       setError("Failed to load journal entries.");
       console.error("Error fetching entries:", err);
     } finally {
       setLoading(false);
     }
-  }, [user?.uid, hasAccess]);
+  }, [user?.uid]);
 
+  // Add a journal entry
   const addEntry = useCallback(
     async (entry: Omit<JournalEntry, "timestamp" | "userId">) => {
       if (!user?.uid) return;
@@ -114,52 +91,30 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
 
-        // Check if this is the first entry
-        if (
-          userEntryCount === 0 &&
-          userDoc.exists() &&
-          userDoc.data()?.hasJournalAccess
-        ) {
+        if (userEntryCount === 0 && userDoc.exists() && userDoc.data()?.hasJournalAccess) {
+          // First entry for a free account
           const docRef = await addDoc(collection(db, "journalEntries"), {
             ...entry,
             userId: user.uid,
             timestamp: Timestamp.now(),
           });
-          setJournalEntries([
-            {
-              id: docRef.id,
-              ...entry,
-              userId: user.uid,
-              timestamp: Timestamp.now().toMillis(),
-            },
-            ...journalEntries,
-          ]);
-
-          // Update Firestore and local state for access after first entry
+          setJournalEntries([{ id: docRef.id, ...entry, userId: user.uid, timestamp: Timestamp.now().toMillis() }, ...journalEntries]);
           await updateDoc(userRef, { hasJournalAccess: false });
-          setHasAccess(false); // Reflect access change in local state
+          setHasAccess(false);
           setUserEntryCount((prevCount) => prevCount + 1);
-
-          // Set error to prompt user to upgrade
           setError("Upgrade to add more entries.");
         } else if (hasAccess) {
-          // Allow adding new entries if user has paid access
+          // Paid access: allow adding new entries
           const docRef = await addDoc(collection(db, "journalEntries"), {
             ...entry,
             userId: user.uid,
             timestamp: Timestamp.now(),
           });
-          setJournalEntries([
-            {
-              id: docRef.id,
-              ...entry,
-              userId: user.uid,
-              timestamp: Timestamp.now().toMillis(),
-            },
-            ...journalEntries,
-          ]);
+          setJournalEntries([{ id: docRef.id, ...entry, userId: user.uid, timestamp: Timestamp.now().toMillis() }, ...journalEntries]);
           setUserEntryCount((prevCount) => prevCount + 1);
+          setError(null); // Clear any error if they have access
         } else {
+          // No access
           setError("Please upgrade to add more entries.");
         }
       } catch (err) {
@@ -170,28 +125,24 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
     [journalEntries, user?.uid, hasAccess, userEntryCount]
   );
 
+  // Delete a journal entry
   const deleteEntry = useCallback(
     async (id: string) => {
       if (!user?.uid) return;
-  
+
       try {
-        // Delete the journal entry in Firestore
         await deleteDoc(doc(db, "journalEntries", id));
-  
-        // Update the local journal entries state
         setJournalEntries((prevEntries) => {
           const updatedEntries = prevEntries.filter((entry) => entry.id !== id);
-  
-          // Update entry count based on updated entries
           const newEntryCount = updatedEntries.length;
           setUserEntryCount(newEntryCount);
-  
-          // Reset hasJournalAccess if no entries remain
+
+          // Reset access if no entries remain
           if (newEntryCount === 0) {
             updateDoc(doc(db, "users", user.uid), { hasJournalAccess: true });
             setHasAccess(true);
           }
-  
+
           return updatedEntries;
         });
       } catch (err) {
@@ -201,18 +152,16 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
     },
     [user?.uid]
   );
-  
+
+  // Update a journal entry
   const updateEntry = useCallback(
     async (id: string, updatedData: Partial<JournalEntry>) => {
       try {
         const entryRef = doc(db, "journalEntries", id);
         await updateDoc(entryRef, updatedData);
-  
-        // Update local state for the edited entry
+
         setJournalEntries((prevEntries) =>
-          prevEntries.map((entry) =>
-            entry.id === id ? { ...entry, ...updatedData } : entry
-          )
+          prevEntries.map((entry) => (entry.id === id ? { ...entry, ...updatedData } : entry))
         );
       } catch (err) {
         setError("Failed to update journal entry.");
@@ -221,7 +170,6 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
     },
     []
   );
-  
 
   const value = useMemo(
     () => ({
@@ -234,19 +182,8 @@ export const JournalProvider = ({ children }: { children: ReactNode }) => {
       error,
       hasAccess,
     }),
-    [
-      journalEntries,
-      addEntry,
-      deleteEntry,
-      updateEntry,
-      fetchUserEntries,
-      loading,
-      error,
-      hasAccess,
-    ]
+    [journalEntries, addEntry, deleteEntry, updateEntry, fetchUserEntries, loading, error, hasAccess]
   );
 
-  return (
-    <JournalContext.Provider value={value}>{children}</JournalContext.Provider>
-  );
+  return <JournalContext.Provider value={value}>{children}</JournalContext.Provider>;
 };

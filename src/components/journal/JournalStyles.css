@@ -246,6 +246,89 @@
   text-align: center;
 }
 
+/* React Select custom styling */
+.react-select-container{
+  margin-bottom: 20px;
+}
+
+.react-select__control {
+  background-color: #6c4889 !important;
+  border: 1px solid #a17bdc !important;
+  color: #fff !important;
+  font-family: inherit !important;
+}
+
+.react-select__control--is-focused {
+  border-color: transparent !important; /* Remove border color */
+  box-shadow: none !important; /* Remove box shadow */
+}
+
+
+.react-select__placeholder {
+  color: #ddd !important;
+}
+
+.react-select__single-value {
+  color: #fff !important;
+}
+
+.react-select__menu {
+  background-color: #1c152a !important;
+}
+
+.react-select__option {
+  background-color: #a17bdc !important;
+  color: #fff !important;
+}
+
+.react-select__dropdown-indicator {
+  color: #fff !important;
+}
+.react-select__option--is-selected {
+  background-color: #7e57c2 !important;
+  color: #fff !important;
+}
+
+.react-select__option--is-focused {
+  background-color: #6c4889 !important;
+  color: #fff !important;
+}
+
+/* React DatePicker custom styling */
+.react-datepicker__input-container input {
+  width: 100% !important;
+  padding: 12px !important;
+  border: 1px solid #a17bdc !important;
+  border-radius: 5px !important;
+  background-color: #6c4889 !important;
+  color: #fff !important;
+  font-family: inherit !important;
+  margin-bottom: 20px;
+}
+
+/* .react-datepicker {
+  font-family: inherit !important;
+  background-color: #1c152a !important;
+} */
+
+.react-datepicker__header {
+  background-color: #6c4889 !important;
+  color: #fff !important;
+}
+
+/* .react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+  color: #fff !important;
+} */
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #a17bdc !important;
+  color: #fff !important;
+}
+
+
 /* Responsive layout for larger screens */
 @media (min-width: 768px) {
   .card-group {
@@ -257,3 +340,12 @@
     width: 120px;
   }
 }
+
+#paypal-button-container {
+  margin: 20px auto 0; /* Centers the button and adds top margin */
+  width: 300px; /* Set a fixed width suitable for PayPal button */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+

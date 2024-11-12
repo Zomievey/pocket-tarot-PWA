@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../services/AuthContext";
 import "./LoginStyles.css";
 
-const Login = () => {
+export default function Login() {
   const { googleLogin, login, register, error, resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -10,6 +10,8 @@ const Login = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [resetMessage, setResetMessage] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
+
 
   // Clear errors on component mount or when isRegistering changes
   useEffect(() => {
@@ -72,7 +74,6 @@ const Login = () => {
     }
   };
 
-  // Clear errors when the component mounts or on login/logout
   useEffect(() => {
     setEmailError("");
     setPasswordError("");
@@ -80,53 +81,95 @@ const Login = () => {
   }, [email, password, isRegistering, error]);
 
   return (
-    <div className='modal-overlay'>
-      <div className='modal-content'>
-        <h1 className='title'>{isRegistering ? "Register" : "Login"}</h1>
-
-        {error && <p className='error-message'>{error}</p>}
-        {resetMessage && <p className='reset-message'>{resetMessage}</p>}
-
-        <form onSubmit={handleSubmit} noValidate>
-          <input
-            type='email'
-            placeholder='Email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {emailError && <p className='error-message'>{emailError}</p>}
-
-          <input
-            type='password'
-            placeholder='Password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {passwordError && <p className='error-message'>{passwordError}</p>}
-
-          <button type='submit' className='login-button'>
-            {isRegistering ? "Register" : "Login"}
-          </button>
-        </form>
-
-        <button className='login-button' onClick={googleLogin}>
-          Login with Google
-        </button>
-
-        <button
-          className='toggle-button'
-          onClick={() => setIsRegistering(!isRegistering)}
-        >
-          {isRegistering
-            ? "Already have an account? Login"
-            : "Don't have an account? Register"}
-        </button>
-        <button className='reset-button' onClick={handlePasswordReset}>
-          Forgot Password?
-        </button>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h1 className="title">
+          {isResetting ? "Reset Password" : isRegistering ? "Register" : "Login"}
+        </h1>
+  
+        {error && <p className="error-message">{error}</p>}
+        {resetMessage && <p className="reset-message">{resetMessage}</p>}
+  
+        {isResetting ? (
+          // Reset Password Form
+          <form onSubmit={(e) => e.preventDefault()} noValidate>
+            <label className='label-login'>Email</label>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {emailError && <p className="error-message">{emailError}</p>}
+            
+            <button
+              type="button"
+              className="login-button"
+              onClick={handlePasswordReset}
+            >
+              Send Reset Link
+            </button>
+  
+            <button
+              className="toggle-button"
+              onClick={() => {
+                setIsResetting(false);
+                setResetMessage("");
+              }}
+            >
+              Return to Login
+            </button>
+          </form>
+        ) : (
+          // Login/Register Form
+          <form onSubmit={handleSubmit} noValidate>
+            <label className='label-login'>Email</label>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {emailError && <p className="error-message">{emailError}</p>}
+  
+            <label className='label-login'>Password</label>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {passwordError && <p className="error-message">{passwordError}</p>}
+  
+            <button type="submit" className="login-button">
+              {isRegistering ? "Register" : "Login"}
+            </button>
+  
+            <button className="login-button" onClick={googleLogin}>
+              Login with Google
+            </button>
+  
+            <button
+              className="toggle-button"
+              onClick={() => setIsRegistering(!isRegistering)}
+            >
+              {isRegistering
+                ? "Already have an account? Login"
+                : "Don't have an account? Register"}
+            </button>
+  
+            <button
+              className="reset-button"
+              onClick={() => {
+                setIsResetting(true);
+                setEmailError("");
+              }}
+            >
+              Forgot Password?
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
-};
-
-export default Login;
+}

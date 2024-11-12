@@ -5,29 +5,51 @@ import { usePayments } from "../../services/PaymentContext";
 import "./JournalStyles.css";
 import { useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
+import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-export default function Journal() {
+declare global {
+  interface Window {
+    paypal: any;
+  }
+}
+
+const Journal = () => {
   const { user } = useAuth();
   const userId = user?.uid;
-  const { journalEntries, deleteEntry, updateEntry, fetchUserEntries, hasAccess } = useJournal();
-  const { createCheckoutSession } = usePayments();
+  const {
+    journalEntries,
+    deleteEntry,
+    updateEntry,
+    fetchUserEntries,
+    hasAccess,
+  } = useJournal();
+  const { handlePaymentSuccess } = usePayments();
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
   const [currentNote, setCurrentNote] = useState<string>("");
 
   const [filterType, setFilterType] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [showFilter, setShowFilter] = useState(false);
 
   const backgroundImage = "/assets/images/main-background.png";
   const navigate = useNavigate();
 
   const isFirestoreTimestamp = (timestamp: any): timestamp is Timestamp => {
-    return timestamp && typeof timestamp === "object" && "seconds" in timestamp && "nanoseconds" in timestamp;
+    return (
+      timestamp &&
+      typeof timestamp === "object" &&
+      "seconds" in timestamp &&
+      "nanoseconds" in timestamp
+    );
   };
 
   const convertTimestamp = (timestamp: any): Date => {
-    return isFirestoreTimestamp(timestamp) ? timestamp.toDate() : new Date(timestamp);
+    return isFirestoreTimestamp(timestamp)
+      ? timestamp.toDate()
+      : new Date(timestamp);
   };
 
   useEffect(() => {
@@ -36,29 +58,49 @@ export default function Journal() {
     }
   }, [fetchUserEntries, userId]);
 
-  const handleCheckout = async () => {
-    try {
-      const session = await createCheckoutSession("price_1QJiEmLPtdwjp995NBM99LB0");
-      if (session && session.url) {
-        window.location.href = session.url;
-      } else {
-        console.error("Failed to retrieve session URL");
-      }
-    } catch (error) {
-      console.error("Error initiating checkout:", error);
-    }
-  };
-
   const filteredEntries = journalEntries.filter((entry) => {
     if (entry.userId !== userId) return false;
     const entryDate = convertTimestamp(entry.timestamp);
 
     if (filterType && entry.type !== filterType) return false;
-    if (startDate && new Date(startDate) > entryDate) return false;
-    if (endDate && new Date(endDate) < entryDate) return false;
+    if (startDate && startDate > entryDate) return false;
+    if (endDate && endDate < entryDate) return false;
 
     return true;
   });
+
+  useEffect(() => {
+    if (!hasAccess) {
+      window.paypal
+        .Buttons({
+          createOrder: (data: any, actions: any) => {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    currency_code: "USD",
+                    value: "2.99",
+                  },
+                },
+              ],
+            });
+          },
+          onApprove: async (data: any, actions: any) => {
+            return actions.order.capture().then(async function (details: any) {
+              alert(
+                "Transaction completed by " + details.payer.name.given_name
+              );
+              await handlePaymentSuccess();
+            });
+          },
+          onError: (err: any) => {
+            console.error("PayPal checkout error:", err);
+            alert("An error occurred during checkout. Please try again.");
+          },
+        })
+        .render("#paypal-button-container");
+    }
+  }, [hasAccess, handlePaymentSuccess]);
 
   const handleEdit = (id: string, notes: string) => {
     setEditingIndex(id);
@@ -78,6 +120,13 @@ export default function Journal() {
       deleteEntry(id);
     }
   };
+
+  const typeOptions = [
+    { value: "", label: "All" },
+    { value: "Card of the Day", label: "Card of the Day" },
+    { value: "Three Card Reading", label: "Three Card Reading" },
+    { value: "Five Card Reading", label: "Five Card Reading" },
+  ];
 
   return (
     <div
@@ -117,42 +166,42 @@ export default function Journal() {
           &times;
         </button>
         <div>
-          <label>Type:</label>
-          <select
-            title="type"
-            value={filterType || ""}
-            onChange={(e) => setFilterType(e.target.value || null)}
-          >
-            <option value="">All</option>
-            <option value="Card of the Day">Card of the Day</option>
-            <option value="Three Card Reading">Three Card Reading</option>
-            <option value="Five Card Reading">Five Card Reading</option>
-          </select>
-        </div>
-        <div>
-          <label>Start Date:</label>
-          <input
-            title="start date"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+          <label htmlFor="type">Type:</label>
+          <Select
+            options={typeOptions}
+            value={typeOptions.find((option) => option.value === filterType)}
+            onChange={(option) => setFilterType(option?.value || null)}
+            placeholder="Select Type"
+            className="react-select-container"
+            classNamePrefix="react-select"
           />
         </div>
         <div>
-          <label>End Date:</label>
-          <input
-            title="end date"
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+          <label htmlFor="start date">Start Date:</label>
+          <DatePicker
+            selected={startDate}
+            onChange={(date: any) => setStartDate(date)}
+            dateFormat="MM/dd/yyyy"
+            placeholderText="Select a start date"
+            className="react-datepicker"
+          />
+        </div>
+        <div>
+          <label htmlFor="end date">End Date:</label>
+          <DatePicker
+            selected={endDate}
+            onChange={(date: any) => setEndDate(date)}
+            dateFormat="MM/dd/yyyy"
+            placeholderText="Select an end date"
+            className="react-datepicker"
           />
         </div>
         <button
           className="filterButton"
           onClick={() => {
             setFilterType(null);
-            setStartDate("");
-            setEndDate("");
+            setStartDate(null);
+            setEndDate(null);
           }}
         >
           Clear Filters
@@ -167,13 +216,15 @@ export default function Journal() {
           filteredEntries.map((entry) => (
             <div className="journal-entry" key={entry.id}>
               <h2 className="journal-entry-title">{entry.type} Reading</h2>
-              <p>
-                {convertTimestamp(entry.timestamp).toLocaleDateString()}
-              </p>
+              <p>{convertTimestamp(entry.timestamp).toLocaleDateString()}</p>
               <div className="card-group">
                 {entry.cards?.map((card, index) => (
                   <div key={index} className="card-image-container">
-                    <img src={card.image} alt={card.title} className="card-image" />
+                    <img
+                      src={card.image}
+                      alt={card.title}
+                      className="card-image"
+                    />
                     <p>{card.title}</p>
                   </div>
                 ))}
@@ -186,34 +237,44 @@ export default function Journal() {
                     placeholder="Add notes about your reading..."
                     className="notes-textarea"
                   />
-                  <button onClick={() => handleSave(entry.id!)} className="btn-save">
+                  <button
+                    onClick={() => handleSave(entry.id!)}
+                    className="btn-save"
+                  >
                     Save
                   </button>
                 </div>
               ) : (
                 <div className="entry">
                   <p>{entry.notes || "No notes yet."}</p>
-                  <button onClick={() => handleEdit(entry.id!, entry.notes || "")} className="btn-edit">
+                  <button
+                    onClick={() => handleEdit(entry.id!, entry.notes || "")}
+                    className="btn-edit"
+                  >
                     Edit Notes
                   </button>
                 </div>
               )}
-              <button onClick={() => handleDelete(entry.id!)} className="btn-delete">
+              <button
+                onClick={() => handleDelete(entry.id!)}
+                className="btn-delete"
+              >
                 Delete Entry
               </button>
             </div>
           ))
         )}
 
-        {/* Show Get Access button only after the first journal entry */}
-        {!hasAccess && filteredEntries.length === 1 && (
+        {!hasAccess && (
           <div className="no-access-container">
             <h2>Unlock Full Journal Access</h2>
-            <p>Access more entries for $2.99 USD</p>
-            <button className='btn-delete' onClick={handleCheckout}>Get Access</button>
+            <p>Access unlimited entries for $2.99 USD</p>
+            <div id="paypal-button-container"></div>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default Journal;

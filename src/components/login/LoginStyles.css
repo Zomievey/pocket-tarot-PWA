@@ -38,6 +38,14 @@
   text-align: center; /* Center the error message text */
 }
 
+.label-login {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ddd;
+  text-align: left;
+  width: 90%; /* Aligns with input fields */
+  margin-top: 10px;
+}
 
 .login-button {
   margin-top: 15px;

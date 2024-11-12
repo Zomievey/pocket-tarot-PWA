@@ -1,4 +1,3 @@
-//index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
@@ -8,9 +7,8 @@ import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  // Remove React.StrictMode wrapper
+  <App />
 );
 
 // Register the service worker for PWA functionality
