@@ -28,11 +28,36 @@ export default function FiveCard() {
       blurReveal: boolean;
     }[]
   >([
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
   ]);
 
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
@@ -82,11 +107,36 @@ export default function FiveCard() {
 
   const resetCards = () => {
     setCards([
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
     ]);
     setActiveCardIndex(null);
     setIsSaved(false); // Reset save status on reset
@@ -100,16 +150,17 @@ export default function FiveCard() {
       cards: cards.map(({ card, isReversed }) => ({
         title: isReversed ? `${card.name} Reversed` : card.name,
         image: card.image,
+        description: isReversed ? card.reversedDescription : card.description,
       })),
       notes: "",
     });
-    
+
     setIsSaved(true);
   };
 
   return (
     <div
-      className="fiveContainer"
+      className='fiveContainer'
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
@@ -118,14 +169,14 @@ export default function FiveCard() {
         backgroundAttachment: "fixed",
       }}
     >
-      <button className="backButton" onClick={() => navigate("/")}>
+      <button className='backButton' onClick={() => navigate("/")}>
         Home
       </button>
-      <div className="fiveCardWrapper">
+      <div className='fiveCardWrapper'>
         {Array.from({ length: 5 }).map((_, index) => {
           const card = cards[index];
           return (
-            <div key={index} className="fiveCardContainer">
+            <div key={index} className='fiveCardContainer'>
               <div
                 className={`fiveCardImageWrapper ${
                   card?.isRevealed ? "revealed" : "clickable"
@@ -135,8 +186,8 @@ export default function FiveCard() {
                 {!card?.isRevealed ? (
                   <img
                     src={cardBack}
-                    alt="Card Back"
-                    className="fiveCardBackImage"
+                    alt='Card Back'
+                    className='fiveCardBackImage'
                   />
                 ) : (
                   card.card && (
@@ -162,13 +213,13 @@ export default function FiveCard() {
       </div>
 
       {activeCardIndex !== null && (
-        <div className="centeredDescriptionWrapper">
-          <h2 className="fiveCardName">
+        <div className='centeredDescriptionWrapper'>
+          <h2 className='fiveCardName'>
             {cards[activeCardIndex].isReversed
               ? `${cards[activeCardIndex].card.name} Reversed`
               : cards[activeCardIndex].card.name}
           </h2>
-          <p className="fiveCardDescription">
+          <p className='fiveCardDescription'>
             {cards[activeCardIndex].isReversed
               ? cards[activeCardIndex].card.reversedDescription
               : cards[activeCardIndex].card.description}
@@ -179,13 +230,13 @@ export default function FiveCard() {
       {allCardsRevealed && (
         <div>
           <button
-            className="saveToJournalButton"
+            className='saveToJournalButton'
             onClick={saveToJournal}
             disabled={isSaved} // Disable if saved
           >
             {isSaved ? "Saved to Journal" : "Save to Journal"}
           </button>
-          <button className="resetButton" onClick={resetCards}>
+          <button className='resetButton' onClick={resetCards}>
             Reset
           </button>
         </div>

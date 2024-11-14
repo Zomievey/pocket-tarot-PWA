@@ -10,19 +10,19 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { doc, setDoc, updateDoc } from "firebase/firestore"; // Removed getDoc
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
 type AuthContextType = {
   user: any;
   loading: boolean;
-  error: string | null; // Added error here
+  error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   googleLogin: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  updateJournalAccess: () => Promise<void>; // New function to update access
+  updateJournalAccess: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    setError(null); // Reset error state
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
@@ -58,6 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (email: string, password: string) => {
+    setError(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userId = userCredential.user.uid;
@@ -95,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const googleLogin = async () => {
+    setError(null);
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
     } catch (error) {
@@ -104,6 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
+    setError(null);
     try {
       await signOut(auth);
       setUser(null);
@@ -114,7 +118,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const resetPassword = async (email: string) => {
-    await sendPasswordResetEmail(auth, email);
+    setError(null);
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+      setError("Failed to send password reset email. Please try again.");
+    }
   };
 
   return (

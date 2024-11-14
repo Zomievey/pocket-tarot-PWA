@@ -126,6 +126,7 @@ export default function ThreeCard() {
       cards: cards.map(({ card, isReversed }) => ({
         title: isReversed ? `${card.name} Reversed` : card.name,
         image: card.image,
+        description: isReversed ? card.reversedDescription : card.description,
       })),
       notes: "",
     });

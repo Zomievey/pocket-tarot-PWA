@@ -17,17 +17,18 @@ import { JournalProvider } from "./services/JournalContext";
 import { AuthProvider } from "./services/AuthContext";
 import { PaymentProvider } from "./services/PaymentContext"; // Import PaymentProvider
 import Home from "./components/home/Home";
+import { RiseLoader } from "react-spinners";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/singleCard" element={<SingleCard />} />
-      <Route path="/threeCard" element={<ThreeCard />} />
-      <Route path="/fiveCard" element={<FiveCard />} />
-      <Route path="/customizeDeck" element={<CustomizeDeck />} />
-      <Route path="/journal" element={<Journal />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path='/' element={<Home />} />
+      <Route path='/singleCard' element={<SingleCard />} />
+      <Route path='/threeCard' element={<ThreeCard />} />
+      <Route path='/fiveCard' element={<FiveCard />} />
+      <Route path='/customizeDeck' element={<CustomizeDeck />} />
+      <Route path='/journal' element={<Journal />} />
+      <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
   );
 }
@@ -56,13 +57,17 @@ function App() {
 
   if (!fontsLoaded)
     return (
-      <div style={{ textAlign: "center", marginTop: "20%" }}>Loading...</div>
+      <div style={{ textAlign: "center", marginTop: "20%" }}>
+        <RiseLoader color='#ffffff'/>
+      </div>
     );
 
   return (
     <Router>
       <AuthProvider>
-        <PaymentProvider> {/* Wrap PaymentProvider here */}
+        <PaymentProvider>
+          {" "}
+          {/* Wrap PaymentProvider here */}
           <JournalProvider>
             <DeckProvider>
               <main style={{ flex: 1 }}>

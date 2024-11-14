@@ -57,17 +57,20 @@ export default function SingleCard() {
         cards: [
           {
             image: card.card.image,
-            title: card.isReversed ? `${card.card.name} Reversed` : card.card.name,
+            title: card.isReversed
+              ? `${card.card.name} Reversed`
+              : card.card.name,
+            description: card.isReversed
+              ? card.card.reversedDescription
+              : card.card.description,
           },
         ],
         notes: "",
       });
-      
-      setIsSaved(true); 
+
+      setIsSaved(true);
     }
   };
-  
-  
 
   const backgroundImage = "/assets/images/single.png";
 
@@ -77,9 +80,9 @@ export default function SingleCard() {
         className='singleContainer'
         style={{
           backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: "cover", 
+          backgroundSize: "cover",
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat", 
+          backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed",
         }}
       >

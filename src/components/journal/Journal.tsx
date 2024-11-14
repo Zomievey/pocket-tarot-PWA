@@ -8,6 +8,7 @@ import { Timestamp } from "firebase/firestore";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { RiseLoader } from "react-spinners";
 
 declare global {
   interface Window {
@@ -24,15 +25,21 @@ const Journal = () => {
     updateEntry,
     fetchUserEntries,
     hasAccess,
+    loading,
   } = useJournal();
   const { handlePaymentSuccess } = usePayments();
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
   const [currentNote, setCurrentNote] = useState<string>("");
-
   const [filterType, setFilterType] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showFilter, setShowFilter] = useState(false);
+  const [hasRenderedPayPalButton, setHasRenderedPayPalButton] = useState(false);
+
+  // State to track which card's description is being shown, structured as an object
+  const [activeCardDescription, setActiveCardDescription] = useState<{
+    [entryId: string]: { [cardIndex: number]: boolean };
+  }>({});
 
   const backgroundImage = "/assets/images/main-background.png";
   const navigate = useNavigate();
@@ -58,6 +65,11 @@ const Journal = () => {
     }
   }, [fetchUserEntries, userId]);
 
+  useEffect(() => {
+    console.log("Journal Entries State:", journalEntries); // Log for debugging
+  }, [journalEntries]);
+  
+
   const filteredEntries = journalEntries.filter((entry) => {
     if (entry.userId !== userId) return false;
     const entryDate = convertTimestamp(entry.timestamp);
@@ -69,8 +81,11 @@ const Journal = () => {
     return true;
   });
 
+  // Only render the PayPal button once
   useEffect(() => {
-    if (!hasAccess) {
+    const loadPayPalButton = () => {
+      if (!window.paypal || hasRenderedPayPalButton || hasAccess || loading) return;
+
       window.paypal
         .Buttons({
           createOrder: (data: any, actions: any) => {
@@ -87,10 +102,9 @@ const Journal = () => {
           },
           onApprove: async (data: any, actions: any) => {
             return actions.order.capture().then(async function (details: any) {
-              alert(
-                "Transaction completed by " + details.payer.name.given_name
-              );
+              alert("Transaction completed by " + details.payer.name.given_name);
               await handlePaymentSuccess();
+              setHasRenderedPayPalButton(true); // Update state to prevent multiple renders
             });
           },
           onError: (err: any) => {
@@ -98,9 +112,16 @@ const Journal = () => {
             alert("An error occurred during checkout. Please try again.");
           },
         })
-        .render("#paypal-button-container");
+        .render("#paypal-button-container")
+        .catch((error: any) => {
+          console.error("PayPal Button Render Error:", error);
+        });
+    };
+
+    if (!hasRenderedPayPalButton && !hasAccess && !loading) {
+      loadPayPalButton();
     }
-  }, [hasAccess, handlePaymentSuccess]);
+  }, [hasAccess, handlePaymentSuccess, loading, hasRenderedPayPalButton]);
 
   const handleEdit = (id: string, notes: string) => {
     setEditingIndex(id);
@@ -119,6 +140,18 @@ const Journal = () => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
       deleteEntry(id);
     }
+  };
+
+  const toggleCardDescription = (entryId: string, cardIndex: number) => {
+    setActiveCardDescription(
+      (prevState: { [entryId: string]: { [cardIndex: number]: boolean } }) => ({
+        ...prevState,
+        [entryId]: {
+          ...(prevState[entryId] || {}),
+          [cardIndex]: !prevState[entryId]?.[cardIndex],
+        },
+      })
+    );
   };
 
   const typeOptions = [
@@ -147,7 +180,8 @@ const Journal = () => {
           className="filter-button"
           onClick={() => setShowFilter(!showFilter)}
         >
-          Filter Entries
+          Filter
+          <br /> Entries
         </button>
       )}
 
@@ -197,7 +231,7 @@ const Journal = () => {
           />
         </div>
         <button
-          className="filterButton"
+          className="clear-filter"
           onClick={() => {
             setFilterType(null);
             setStartDate(null);
@@ -210,62 +244,85 @@ const Journal = () => {
 
       <div className="journal-container">
         <h1 className="journal-title">Your Journal</h1>
-        {filteredEntries.length === 0 ? (
-          <p>No journal entries yet. Save a card reading to see it here!</p>
-        ) : (
-          filteredEntries.map((entry) => (
-            <div className="journal-entry" key={entry.id}>
-              <h2 className="journal-entry-title">{entry.type} Reading</h2>
-              <p>{convertTimestamp(entry.timestamp).toLocaleDateString()}</p>
-              <div className="card-group">
-                {entry.cards?.map((card, index) => (
-                  <div key={index} className="card-image-container">
-                    <img
-                      src={card.image}
-                      alt={card.title}
-                      className="card-image"
-                    />
-                    <p>{card.title}</p>
-                  </div>
-                ))}
-              </div>
-              {editingIndex === entry.id ? (
-                <div>
-                  <textarea
-                    value={currentNote}
-                    onChange={(e) => setCurrentNote(e.target.value)}
-                    placeholder="Add notes about your reading..."
-                    className="notes-textarea"
-                  />
-                  <button
-                    onClick={() => handleSave(entry.id!)}
-                    className="btn-save"
-                  >
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <div className="entry">
-                  <p>{entry.notes || "No notes yet."}</p>
-                  <button
-                    onClick={() => handleEdit(entry.id!, entry.notes || "")}
-                    className="btn-edit"
-                  >
-                    Edit Notes
-                  </button>
-                </div>
-              )}
-              <button
-                onClick={() => handleDelete(entry.id!)}
-                className="btn-delete"
-              >
-                Delete Entry
-              </button>
-            </div>
-          ))
-        )}
 
-        {!hasAccess && (
+        {loading && <RiseLoader color="#ffffff" />}
+        {!loading && filteredEntries.length === 0 && (
+          <p>No journal entries yet. Save a card reading to see it here!</p>
+        )}
+        {!loading &&
+          filteredEntries.length > 0 &&
+          filteredEntries.map((entry) => {
+            if (!entry.id) return null;
+            const entryId = entry.id;
+
+            return (
+              <div className="journal-entry" key={entryId}>
+                <h2 className="journal-entry-title">{entry.type}</h2>
+                <p>{convertTimestamp(entry.timestamp).toLocaleDateString()}</p>
+                <div className="card-group">
+                  {entry.cards?.map((card, index) => {
+                    const isDescriptionVisible =
+                      activeCardDescription[entryId]?.[index] || false;
+
+                    return (
+                      <div
+                        key={index}
+                        className="card-image-container"
+                        onClick={() => toggleCardDescription(entryId, index)}
+                      >
+                        {isDescriptionVisible ? (
+                          <div className="card-description">
+                            <p>{card.description}</p>
+                          </div>
+                        ) : (
+                          <img
+                            src={card.image}
+                            alt={card.title}
+                            className="card-image"
+                          />
+                        )}
+                        <p>{card.title}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+                {editingIndex === entryId ? (
+                  <div>
+                    <textarea
+                      value={currentNote}
+                      onChange={(e) => setCurrentNote(e.target.value)}
+                      placeholder="Add notes about your reading..."
+                      className="notes-textarea"
+                    />
+                    <button
+                      onClick={() => handleSave(entryId)}
+                      className="btn-save"
+                    >
+                      Save
+                    </button>
+                  </div>
+                ) : (
+                  <div className="entry">
+                    <p>{entry.notes || "No notes yet."}</p>
+                    <button
+                      onClick={() => handleEdit(entryId, entry.notes || "")}
+                      className="btn-edit"
+                    >
+                      Edit Notes
+                    </button>
+                  </div>
+                )}
+                <button
+                  onClick={() => handleDelete(entryId)}
+                  className="btn-delete"
+                >
+                  Delete Entry
+                </button>
+              </div>
+            );
+          })}
+
+        {!hasAccess && !loading && filteredEntries.length === 0 && (
           <div className="no-access-container">
             <h2>Unlock Full Journal Access</h2>
             <p>Access unlimited entries for $2.99 USD</p>

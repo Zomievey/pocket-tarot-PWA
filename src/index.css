@@ -76,11 +76,11 @@ html,
 .backButton {
   position: absolute;
   top: 20px;
-  left: 20px;
+  left: 15px;
   background: none;
   border: none;
   color: #ffffff;
-  font-size: 1.2em;
+  font-size: 1em;
   cursor: pointer;
   font-family: "Cinzel Decorative", serif;
   z-index: 1;
