@@ -12,8 +12,6 @@ export default function Login() {
   const [resetMessage, setResetMessage] = useState("");
   const [isResetting, setIsResetting] = useState(false);
 
-
-  // Clear errors on component mount or when isRegistering changes
   useEffect(() => {
     setEmailError("");
     setPasswordError("");
@@ -27,24 +25,19 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setEmailError("");
+    setPasswordError("");
+    
     let valid = true;
 
-    // Custom email validation
     if (!validateEmail(email)) {
-      setEmailError(
-        "Please enter a valid email in the format: name@example.com"
-      );
+      setEmailError("Please enter a valid email in the format: name@example.com");
       valid = false;
-    } else {
-      setEmailError("");
     }
 
-    // Password length validation
     if (password.length < 6) {
       setPasswordError("Password must be at least 6 characters long.");
       valid = false;
-    } else {
-      setPasswordError("");
     }
 
     if (valid) {
@@ -56,9 +49,19 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setEmailError(""); // Clear email error for Google login
+    setPasswordError(""); // Clear password error for Google login
+    try {
+      await googleLogin();
+    } catch (err) {
+      console.error("Error with Google login:", err);
+    }
+  };
+
   const handlePasswordReset = async () => {
     setResetMessage("");
-    setEmailError(""); // Clear previous email error
+    setEmailError("");
 
     if (!validateEmail(email)) {
       setEmailError("Please enter a valid email to reset password.");
@@ -74,26 +77,19 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
-    setEmailError("");
-    setPasswordError("");
-    setResetMessage("");
-  }, [email, password, isRegistering, error]);
-
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <h1 className="title">
           {isResetting ? "Reset Password" : isRegistering ? "Register" : "Login"}
         </h1>
-  
+
         {error && <p className="error-message">{error}</p>}
         {resetMessage && <p className="reset-message">{resetMessage}</p>}
-  
+
         {isResetting ? (
-          // Reset Password Form
           <form onSubmit={(e) => e.preventDefault()} noValidate>
-            <label className='label-login'>Email</label>
+            <label className="label-login">Email</label>
             <input
               type="email"
               placeholder="Email"
@@ -102,28 +98,17 @@ export default function Login() {
             />
             {emailError && <p className="error-message">{emailError}</p>}
             
-            <button
-              type="button"
-              className="login-button"
-              onClick={handlePasswordReset}
-            >
+            <button type="button" className="login-button" onClick={handlePasswordReset}>
               Send Reset Link
             </button>
-  
-            <button
-              className="toggle-button"
-              onClick={() => {
-                setIsResetting(false);
-                setResetMessage("");
-              }}
-            >
+
+            <button className="toggle-button" onClick={() => setIsResetting(false)}>
               Return to Login
             </button>
           </form>
         ) : (
-          // Login/Register Form
           <form onSubmit={handleSubmit} noValidate>
-            <label className='label-login'>Email</label>
+            <label className="label-login">Email</label>
             <input
               type="email"
               placeholder="Email"
@@ -131,8 +116,8 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
             />
             {emailError && <p className="error-message">{emailError}</p>}
-  
-            <label className='label-login'>Password</label>
+
+            <label className="label-login">Password</label>
             <input
               type="password"
               placeholder="Password"
@@ -140,31 +125,23 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             {passwordError && <p className="error-message">{passwordError}</p>}
-  
+
             <button type="submit" className="login-button">
               {isRegistering ? "Register" : "Login"}
             </button>
-  
-            <button className="login-button" onClick={googleLogin}>
+
+            <button type="button" className="login-button" onClick={handleGoogleLogin}>
               Login with Google
             </button>
-  
+
             <button
               className="toggle-button"
               onClick={() => setIsRegistering(!isRegistering)}
             >
-              {isRegistering
-                ? "Already have an account? Login"
-                : "Don't have an account? Register"}
+              {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
             </button>
-  
-            <button
-              className="reset-button"
-              onClick={() => {
-                setIsResetting(true);
-                setEmailError("");
-              }}
-            >
+
+            <button className="reset-button" onClick={() => setIsResetting(true)}>
               Forgot Password?
             </button>
           </form>

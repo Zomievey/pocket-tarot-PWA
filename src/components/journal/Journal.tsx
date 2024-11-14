@@ -36,7 +36,6 @@ const Journal = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [hasRenderedPayPalButton, setHasRenderedPayPalButton] = useState(false);
 
-  // State to track which card's description is being shown, structured as an object
   const [activeCardDescription, setActiveCardDescription] = useState<{
     [entryId: string]: { [cardIndex: number]: boolean };
   }>({});
@@ -66,9 +65,8 @@ const Journal = () => {
   }, [fetchUserEntries, userId]);
 
   useEffect(() => {
-    console.log("Journal Entries State:", journalEntries); // Log for debugging
+    console.log("Journal Entries State:", journalEntries); // Debugging
   }, [journalEntries]);
-  
 
   const filteredEntries = journalEntries.filter((entry) => {
     if (entry.userId !== userId) return false;
@@ -88,7 +86,7 @@ const Journal = () => {
 
       window.paypal
         .Buttons({
-          createOrder: (data: any, actions: any) => {
+          createOrder: (data: Record<string, unknown>, actions: any) => {
             return actions.order.create({
               purchase_units: [
                 {
@@ -100,11 +98,13 @@ const Journal = () => {
               ],
             });
           },
-          onApprove: async (data: any, actions: any) => {
-            return actions.order.capture().then(async function (details: any) {
+          onApprove: async (data: Record<string, unknown>, actions: any) => {
+            return actions.order.capture().then(async (details: { payer: { name: { given_name: string } } }) => {
               alert("Transaction completed by " + details.payer.name.given_name);
+
               await handlePaymentSuccess();
-              setHasRenderedPayPalButton(true); // Update state to prevent multiple renders
+
+              setHasRenderedPayPalButton(true); // Ensure button is only rendered once
             });
           },
           onError: (err: any) => {
@@ -121,7 +121,7 @@ const Journal = () => {
     if (!hasRenderedPayPalButton && !hasAccess && !loading) {
       loadPayPalButton();
     }
-  }, [hasAccess, handlePaymentSuccess, loading, hasRenderedPayPalButton]);
+  }, [hasAccess, loading, hasRenderedPayPalButton, handlePaymentSuccess]);
 
   const handleEdit = (id: string, notes: string) => {
     setEditingIndex(id);

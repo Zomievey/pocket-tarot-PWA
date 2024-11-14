@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { db } from "./firebaseConfig";
 import { doc, updateDoc } from "firebase/firestore";
-import { useAuth } from "./AuthContext"; 
+import { useAuth } from "./AuthContext";
 
 type PaymentContextType = {
   handlePaymentSuccess: () => Promise<void>;

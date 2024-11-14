@@ -10,7 +10,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
 type AuthContextType = {
@@ -41,7 +41,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        // Ensure Firestore document exists for the user
+        if (!userDoc.exists()) {
+          await setDoc(userDocRef, {
+            email: currentUser.email,
+            hasJournalAccess: true,
+            entryCount: 0,
+          });
+        }
+      }
       setUser(currentUser);
       setLoading(false);
     });
@@ -51,7 +64,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     setError(null); // Reset error state
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const userId = userCredential.user.uid;
+
+      // Check if user document exists, if not, create one
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          email,
+          hasJournalAccess: true,
+          entryCount: 0,
+        });
+      }
+
+      setUser(userCredential.user);
     } catch (error) {
       console.error("Login error:", error);
       setError("Failed to log in. Please check your credentials.");
@@ -61,9 +92,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (email: string, password: string) => {
     setError(null);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const userId = userCredential.user.uid;
-      await setDoc(doc(db, "users", userId), { email, hasJournalAccess: true });
+      await setDoc(doc(db, "users", userId), {
+        email,
+        hasJournalAccess: true,
+        entryCount: 0,
+      });
       setUser(userCredential.user);
     } catch (err) {
       if (err instanceof FirebaseError) {
@@ -99,7 +138,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const googleLogin = async () => {
     setError(null);
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const user = result.user;
+
+      // Reference to the user's document in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      // If user document does not exist, create one with default access
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          email: user.email,
+          hasJournalAccess: true,
+          entryCount: 0, // Initialize entry count if relevant
+        });
+      }
+
+      setUser(user);
     } catch (error) {
       console.error("Failed Google login:", error);
       setError("Failed to log in with Google. Please try again.");
