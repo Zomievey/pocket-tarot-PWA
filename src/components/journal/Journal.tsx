@@ -209,7 +209,7 @@ const Journal = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
+        backgroundAttachment: "scroll",
       }}
     >
       <button className="backButton" onClick={() => navigate("/")}>
