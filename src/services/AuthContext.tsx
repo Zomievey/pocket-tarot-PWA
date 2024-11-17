@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "./firebaseConfig";
+import { auth, db } from "./firebaseConfig";
 import { FirebaseError } from "firebase/app";
 import {
   signInWithPopup,
@@ -11,7 +11,6 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "./firebaseConfig";
 
 type AuthContextType = {
   user: any;
@@ -50,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!userDoc.exists()) {
           await setDoc(userDocRef, {
             email: currentUser.email,
-            hasJournalAccess: true,
+            hasUnlimitedAccess: false,
             entryCount: 0,
           });
         }
@@ -77,7 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
           email,
-          hasJournalAccess: true,
+          hasUnlimitedAccess: false,
           entryCount: 0,
         });
       }
@@ -100,7 +99,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userId = userCredential.user.uid;
       await setDoc(doc(db, "users", userId), {
         email,
-        hasJournalAccess: true,
+        hasUnlimitedAccess: false, // Set to false initially
         entryCount: 0,
       });
       setUser(userCredential.user);
@@ -125,15 +124,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateJournalAccess = async () => {
+  const updateJournalAccess = React.useCallback(async () => {
     if (user?.uid) {
       try {
-        await updateDoc(doc(db, "users", user.uid), { hasJournalAccess: true });
+        await updateDoc(doc(db, "users", user.uid), { hasUnlimitedAccess: true });
       } catch (error) {
         console.error("Failed to update journal access:", error);
       }
     }
-  };
+  }, [user?.uid]);
 
   const googleLogin = async () => {
     setError(null);
@@ -149,8 +148,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
           email: user.email,
-          hasJournalAccess: true,
-          entryCount: 0, // Initialize entry count if relevant
+          hasUnlimitedAccess: false,
+          entryCount: 0, // Initialize entry count
         });
       }
 
@@ -182,21 +181,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        login,
-        register,
-        googleLogin,
-        logout,
-        resetPassword,
-        updateJournalAccess,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = React.useMemo(
+    () => ({
+      user,
+      loading,
+      error,
+      login,
+      register,
+      googleLogin,
+      logout,
+      resetPassword,
+      updateJournalAccess,
+    }),
+    [user, loading, error, updateJournalAccess]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

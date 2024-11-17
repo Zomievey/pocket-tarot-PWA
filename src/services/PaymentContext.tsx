@@ -1,7 +1,10 @@
-import React, { createContext, useContext } from "react";
+// PaymentContext.tsx
+
+import React, { createContext, useCallback, useContext, useMemo } from "react";
 import { db } from "./firebaseConfig";
 import { doc, updateDoc } from "firebase/firestore";
 import { useAuth } from "./AuthContext";
+import { toast } from "react-toastify";
 
 type PaymentContextType = {
   handlePaymentSuccess: () => Promise<void>;
@@ -17,27 +20,42 @@ export const usePayments = () => {
   return context;
 };
 
-// PaymentProvider component
 export const PaymentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { user } = useAuth();
 
-  // Update the user's journal access upon successful payment
-  const handlePaymentSuccess = async () => {
-    if (user?.uid) {
-      try {
-        await updateDoc(doc(db, "users", user.uid), { hasJournalAccess: true });
-        console.log("User access updated to full access after payment.");
-      } catch (error) {
-        console.error("Error updating journal access after payment:", error);
-      }
+  const handlePaymentSuccess = useCallback(async () => {
+    if (!user?.uid) return;
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+
+      // Grant unlimited access
+      await updateDoc(userRef, {
+        hasUnlimitedAccess: true,
+      });
+
+      // No need to call fetchUserAccess here
+
+      // Display success notification
+      toast.success(
+        "Payment successful! You now have unlimited journal access."
+      );
+    } catch (err) {
+      console.error("Error handling payment success:", err);
+      toast.error(
+        "Payment was successful, but there was an issue updating your access. Please refresh the page."
+      );
     }
-  };
+  }, [user?.uid]);
+
+  const value = useMemo(
+    () => ({ handlePaymentSuccess }),
+    [handlePaymentSuccess]
+  );
 
   return (
-    <PaymentContext.Provider value={{ handlePaymentSuccess }}>
-      {children}
-    </PaymentContext.Provider>
+    <PaymentContext.Provider value={value}>{children}</PaymentContext.Provider>
   );
 };

@@ -13,7 +13,6 @@
   margin: 0 auto;
   min-height: 100vh;
   box-sizing: border-box;
-  overflow-y: auto;
   padding-bottom: 20px;
 }
 
@@ -71,8 +70,8 @@
 /* Filter button styling */
 .filter-button {
   position: fixed;
-  top: 20px;
-  right: 15px;
+  top: 15px;
+  right: 0;
   background: none;
   border: none;
   color: #ffffff;
@@ -320,21 +319,10 @@
   margin-bottom: 20px;
 }
 
-/* .react-datepicker {
-  font-family: inherit !important;
-  background-color: #1c152a !important;
-} */
-
 .react-datepicker__header {
   background-color: #6c4889 !important;
   color: #fff !important;
 }
-
-/* .react-datepicker__day-name,
-.react-datepicker__day,
-.react-datepicker__time-name {
-  color: #fff !important;
-} */
 
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
@@ -360,4 +348,57 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  background-color: #1c152a;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.pagination-button:hover {
+  background-color: #a17bdc;
+}
+
+.pagination-button[disabled],
+.pagination-button[disabled]:hover {
+  background-color: #6c4889;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 16px;
+  color: #fff;
+  margin: 0 10px;
+ 
+}
+
+/* Responsive adjustments for pagination */
+@media (max-width: 600px) {
+  .pagination {
+    flex-direction: column;
+  }
+
+  .pagination-button {
+    margin: 5px 0;
+  }
+
+  .pagination-info {
+    margin: 10px 0;
+  }
 }

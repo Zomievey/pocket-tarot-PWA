@@ -9,6 +9,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { RiseLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 declare global {
   interface Window {
@@ -24,8 +25,9 @@ const Journal = () => {
     deleteEntry,
     updateEntry,
     fetchUserEntries,
-    hasAccess,
+    hasUnlimitedAccess,
     loading,
+    entryCount,
   } = useJournal();
   const { handlePaymentSuccess } = usePayments();
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
@@ -34,11 +36,14 @@ const Journal = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showFilter, setShowFilter] = useState(false);
-  const [hasRenderedPayPalButton, setHasRenderedPayPalButton] = useState(false);
 
   const [activeCardDescription, setActiveCardDescription] = useState<{
     [entryId: string]: { [cardIndex: number]: boolean };
   }>({});
+
+  // Pagination state variables
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const entriesPerPage = 2;
 
   const backgroundImage = "/assets/images/main-background.png";
   const navigate = useNavigate();
@@ -61,6 +66,7 @@ const Journal = () => {
   useEffect(() => {
     if (userId) {
       fetchUserEntries();
+      console.log("Fetching user entries...", userId); // Debugging
     }
   }, [fetchUserEntries, userId]);
 
@@ -68,6 +74,7 @@ const Journal = () => {
     console.log("Journal Entries State:", journalEntries); // Debugging
   }, [journalEntries]);
 
+  // Filtered entries based on user ID and applied filters
   const filteredEntries = journalEntries.filter((entry) => {
     if (entry.userId !== userId) return false;
     const entryDate = convertTimestamp(entry.timestamp);
@@ -79,49 +86,79 @@ const Journal = () => {
     return true;
   });
 
+  // Sort entries by date (newest first)
+  const sortedEntries = filteredEntries.sort((a, b) => {
+    const dateA = convertTimestamp(a.timestamp);
+    const dateB = convertTimestamp(b.timestamp);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(sortedEntries.length / entriesPerPage);
+
+  const indexOfLastEntry = currentPage * entriesPerPage;
+  const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
+  const currentEntries = sortedEntries.slice(indexOfFirstEntry, indexOfLastEntry);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterType, startDate, endDate]);
+
   // Only render the PayPal button once
   useEffect(() => {
-    const loadPayPalButton = () => {
-      if (!window.paypal || hasRenderedPayPalButton || hasAccess || loading) return;
+    const paypalContainer = document.getElementById("paypal-button-container");
 
-      window.paypal
-        .Buttons({
-          createOrder: (data: Record<string, unknown>, actions: any) => {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    currency_code: "USD",
-                    value: "2.99",
+    // If we should render the PayPal button
+    if (!hasUnlimitedAccess && entryCount >= 3 && !loading) {
+      if (paypalContainer && paypalContainer.innerHTML.trim() === "") {
+        window.paypal
+          .Buttons({
+            createOrder: (data: Record<string, unknown>, actions: any) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      currency_code: "USD",
+                      value: "2.99",
+                    },
                   },
-                },
-              ],
-            });
-          },
-          onApprove: async (data: Record<string, unknown>, actions: any) => {
-            return actions.order.capture().then(async (details: { payer: { name: { given_name: string } } }) => {
-              alert("Transaction completed by " + details.payer.name.given_name);
-
-              await handlePaymentSuccess();
-
-              setHasRenderedPayPalButton(true); // Ensure button is only rendered once
-            });
-          },
-          onError: (err: any) => {
-            console.error("PayPal checkout error:", err);
-            alert("An error occurred during checkout. Please try again.");
-          },
-        })
-        .render("#paypal-button-container")
-        .catch((error: any) => {
-          console.error("PayPal Button Render Error:", error);
-        });
-    };
-
-    if (!hasRenderedPayPalButton && !hasAccess && !loading) {
-      loadPayPalButton();
+                ],
+              });
+            },
+            onApprove: async (data: Record<string, unknown>, actions: any) => {
+              return actions.order
+                .capture()
+                .then(
+                  async (details: {
+                    payer: { name: { given_name: string } };
+                  }) => {
+                    await handlePaymentSuccess();
+                  }
+                );
+            },
+            onError: (err: any) => {
+              console.error("PayPal checkout error:", err);
+              toast.error(
+                "An error occurred during checkout. Please try again."
+              );
+            },
+            onCancel: (data: any) => {
+              console.warn("PayPal payment cancelled:", data);
+              toast.info("Payment was cancelled.");
+            },
+          })
+          .render("#paypal-button-container")
+          .catch((error: any) => {
+            console.error("PayPal Button Render Error:", error);
+          });
+      }
+    } else {
+      if (paypalContainer) {
+        paypalContainer.innerHTML = "";
+      }
     }
-  }, [hasAccess, loading, hasRenderedPayPalButton, handlePaymentSuccess]);
+  }, [hasUnlimitedAccess, entryCount, loading, handlePaymentSuccess]);
 
   const handleEdit = (id: string, notes: string) => {
     setEditingIndex(id);
@@ -160,6 +197,10 @@ const Journal = () => {
     { value: "Three Card Reading", label: "Three Card Reading" },
     { value: "Five Card Reading", label: "Five Card Reading" },
   ];
+
+  useEffect(() => {
+    console.log("hasUnlimitedAccess:", hasUnlimitedAccess);
+  }, [hasUnlimitedAccess]);
 
   return (
     <div
@@ -246,12 +287,12 @@ const Journal = () => {
         <h1 className="journal-title">Your Journal</h1>
 
         {loading && <RiseLoader color="#ffffff" />}
-        {!loading && filteredEntries.length === 0 && (
+        {!loading && currentEntries.length === 0 && (
           <p>No journal entries yet. Save a card reading to see it here!</p>
         )}
         {!loading &&
-          filteredEntries.length > 0 &&
-          filteredEntries.map((entry) => {
+          currentEntries.length > 0 &&
+          currentEntries.map((entry) => {
             if (!entry.id) return null;
             const entryId = entry.id;
 
@@ -281,7 +322,7 @@ const Journal = () => {
                             className="card-image"
                           />
                         )}
-                        <p>{card.title}</p>
+                        <p className="card-title">{card.title}</p>
                       </div>
                     );
                   })}
@@ -322,13 +363,52 @@ const Journal = () => {
             );
           })}
 
-        {!hasAccess && !loading && filteredEntries.length === 0 && (
+        {/* Pagination Controls */}
+        {!loading && totalPages > 1 && (
+          <div className="pagination">
+            <button
+              className="pagination-button"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              First
+            </button>
+            <button
+              className="pagination-button"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="pagination-info">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="pagination-button"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+            <button
+              className="pagination-button"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              Last
+            </button>
+          </div>
+        )}
+
+        {!hasUnlimitedAccess && entryCount >= 3 && !loading ? (
           <div className="no-access-container">
             <h2>Unlock Full Journal Access</h2>
             <p>Access unlimited entries for $2.99 USD</p>
             <div id="paypal-button-container"></div>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

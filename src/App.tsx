@@ -18,6 +18,8 @@ import { AuthProvider } from "./services/AuthContext";
 import { PaymentProvider } from "./services/PaymentContext"; // Import PaymentProvider
 import Home from "./components/home/Home";
 import { RiseLoader } from "react-spinners";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AppRoutes() {
   return (
@@ -58,7 +60,7 @@ function App() {
   if (!fontsLoaded)
     return (
       <div style={{ textAlign: "center", marginTop: "20%" }}>
-        <RiseLoader color='#ffffff'/>
+        <RiseLoader color='#ffffff' />
       </div>
     );
 
@@ -76,6 +78,7 @@ function App() {
               <Analytics />
             </DeckProvider>
           </JournalProvider>
+          <ToastContainer />
         </PaymentProvider>
       </AuthProvider>
     </Router>
