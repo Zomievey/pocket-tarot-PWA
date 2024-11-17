@@ -46,7 +46,7 @@ const Home = () => {
           <div className='info-icon-container'>
             <FontAwesomeIcon
               icon={faCircleInfo}
-              size='1x'
+              size='2x'
               color='white'
               className='info-icon'
               onClick={toggleInfoVisibility}
@@ -62,7 +62,7 @@ const Home = () => {
                   <li>Log your card readings.</li>
                   <li>Save notes and insights for each journal entry.</li>
                   <li>
-                    Tap each card in your journal entry to get reveal the card's
+                    Tap each card in your journal entry to reveal the card's
                     description.
                   </li>
                   <li>
