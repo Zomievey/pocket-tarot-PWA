@@ -11,14 +11,15 @@ html,
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto; /* Enables vertical scrolling */
-
-  /* Hide the scrollbar */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
-body::-webkit-scrollbar,
-html::-webkit-scrollbar {
+/* Hide scrollbar for all browsers */
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Opera */
 }
 
@@ -139,7 +140,7 @@ html::-webkit-scrollbar {
 
 .saveToJournalButton:disabled {
   background-color: #ccc;
-  cursor: none;
+  cursor: not-allowed;
 }
 
 /* Responsive adjustments for tablets */
