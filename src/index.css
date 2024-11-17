@@ -23,6 +23,8 @@ body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Opera */
 }
 
+/* Rest of your existing styles... */
+
 /* Home container */
 .homeContainer {
   display: flex;

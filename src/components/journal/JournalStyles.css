@@ -71,7 +71,7 @@
 .filter-button {
   position: fixed;
   top: 15px;
-  right: 0;
+  right: 15px;
   background: none;
   border: none;
   color: #ffffff;
