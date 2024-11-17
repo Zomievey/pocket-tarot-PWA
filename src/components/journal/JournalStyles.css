@@ -1,0 +1,404 @@
+/* Journal container, styled like the overlay */
+.journal-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: rgba(28, 21, 42, 0.7);
+  padding: 40px;
+  border-radius: 10px;
+  width: 85%;
+  text-align: center;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: 20px;
+}
+
+/* Journal entries styling */
+.journal-entry {
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  background-color: #a17bdc;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.journal-entry-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  font-family: "Cinzel Decorative", serif;
+  margin-bottom: 10px;
+  margin: 5px;
+}
+
+/* Title styling for the journal */
+.journal-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: bold;
+  color: #fff;
+  font-family: "Cinzel Decorative", serif;
+  margin-bottom: 20px;
+  margin-top: 70px;
+}
+
+/* Image styling for each card */
+.card-image {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+}
+
+/* Notes text area styling */
+.notes-textarea {
+  width: calc(100% - 20px);
+  max-width: 100%;
+  height: 80px;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: inherit;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+/* Filter button styling */
+.filter-button {
+  position: fixed;
+  top: 15px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1em;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  z-index: 1;
+}
+
+.filter-button:hover {
+  color: #a17bdc;
+}
+
+/* Modal overlay */
+.modal-overlay-journal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.entry {
+  margin: 10px;
+}
+
+/* Show overlay when active */
+.modal-overlay-journal.active {
+  display: block;
+}
+/* Modal close button */
+.modal-journal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5em;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.modal-journal-close:hover {
+  color: #a17bdc;
+}
+
+/* Filter modal container */
+.filter-container {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1c152a;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 380px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+/* Show filter modal when active */
+.filter-container.active {
+  display: block;
+}
+
+.filter-container label {
+  font-family: "Cinzel Decorative", serif;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.filter-container select,
+.filter-container input[type="date"] {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  border: 1px solid #a17bdc;
+  background-color: white;
+  color: #1c152a;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.clear-filter {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: white;
+  color: #1c152a;
+  border: none;
+  border-radius: 5px;
+  font-family: "Cinzel Decorative", serif;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+.clear-filter:hover {
+  background-color: #a17bdc;
+}
+
+/* Button styling */
+.btn-save,
+.btn-edit {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #1c152a;
+  color: #ffffff;
+  border: #1c152a;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+.btn-save:hover,
+.btn-edit:hover {
+  background-color: #a17bdc;
+  border: white 1px solid;
+}
+
+.btn-delete {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 8px 15px;
+  background-color: white;
+  color: #1c152a;
+  border: white;
+  border-radius: 5px;
+  font-family: "Cinzel Decorative", serif;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+  background-color: #a17bdc;
+  border: #1c152a 1px solid;
+}
+
+/* Container for card images in journal entries */
+.card-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.card-image-container {
+  text-align: center;
+  max-width: 40%;
+  cursor: pointer;
+}
+
+.card-title {
+  font-family: "Cinzel Decorative", serif;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  white-space: normal; /* Allow wrapping */
+  overflow-wrap: break-word; /* Break long words */
+  text-align: center;
+}
+
+.card-description {
+  font-size: 1rem;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  background-color: rgba(28, 21, 42, 0.8); /* Dark background for readability */
+  border-radius: 5px;
+  overflow-wrap: break-word;
+  word-spacing: 0.05em;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* React Select custom styling */
+.react-select-container {
+  margin-bottom: 20px;
+}
+
+.react-select__control {
+  background-color: #6c4889 !important;
+  border: 1px solid #a17bdc !important;
+  color: #fff !important;
+  font-family: inherit !important;
+}
+
+.react-select__control--is-focused {
+  border-color: transparent !important; /* Remove border color */
+  box-shadow: none !important; /* Remove box shadow */
+}
+
+.react-select__placeholder {
+  color: #ddd !important;
+}
+
+.react-select__single-value {
+  color: #fff !important;
+}
+
+.react-select__menu {
+  background-color: #1c152a !important;
+}
+
+.react-select__option {
+  background-color: #a17bdc !important;
+  color: #fff !important;
+}
+
+.react-select__dropdown-indicator {
+  color: #fff !important;
+}
+.react-select__option--is-selected {
+  background-color: #7e57c2 !important;
+  color: #fff !important;
+}
+
+.react-select__option--is-focused {
+  background-color: #6c4889 !important;
+  color: #fff !important;
+}
+
+/* React DatePicker custom styling */
+.react-datepicker__input-container input {
+  width: 100% !important;
+  padding: 12px !important;
+  border: 1px solid #a17bdc !important;
+  border-radius: 5px !important;
+  background-color: #6c4889 !important;
+  color: #fff !important;
+  font-family: inherit !important;
+  margin-bottom: 20px;
+}
+
+.react-datepicker__header {
+  background-color: #6c4889 !important;
+  color: #fff !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #a17bdc !important;
+  color: #fff !important;
+}
+
+/* Responsive layout for larger screens */
+@media (min-width: 768px) {
+  .card-group {
+    flex-direction: row;
+  }
+
+  /* Adjust the card image size for larger screens */
+  .card-image {
+    width: 120px;
+  }
+}
+
+#paypal-button-container {
+  margin: 20px auto 0; /* Centers the button and adds top margin */
+  width: 300px; /* Set a fixed width suitable for PayPal button */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  background-color: #1c152a;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.pagination-button:hover {
+  background-color: #a17bdc;
+}
+
+.pagination-button[disabled],
+.pagination-button[disabled]:hover {
+  background-color: #6c4889;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 16px;
+  color: #fff;
+  margin: 0 10px;
+ 
+}
+
+/* Responsive adjustments for pagination */
+@media (max-width: 600px) {
+  .pagination {
+    flex-direction: column;
+  }
+
+  .pagination-button {
+    margin: 5px 0;
+  }
+
+  .pagination-info {
+    margin: 10px 0;
+  }
+}

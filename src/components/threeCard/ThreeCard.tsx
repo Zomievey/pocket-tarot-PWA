@@ -3,6 +3,7 @@ import { tarotDeck } from "../../classes/TarotDeck";
 import "./ThreeCardStyles.css";
 import { useDeck } from "../../services/DeckContext";
 import { useNavigate } from "react-router-dom";
+import { useJournal } from "../../services/JournalContext"; // Import useJournal
 
 type TarotCard = {
   name: string;
@@ -12,7 +13,6 @@ type TarotCard = {
 };
 
 export default function ThreeCard() {
-  // Placeholder card for initial state
   const placeholderCard: TarotCard = {
     name: "Placeholder",
     image: "",
@@ -21,15 +21,37 @@ export default function ThreeCard() {
   };
 
   const [cards, setCards] = useState<
-    { card: TarotCard; isReversed: boolean; isRevealed: boolean; blurReveal: boolean }[]
+    {
+      card: TarotCard;
+      isReversed: boolean;
+      isRevealed: boolean;
+      blurReveal: boolean;
+    }[]
   >([
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-    { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
+    {
+      card: placeholderCard,
+      isReversed: false,
+      isRevealed: false,
+      blurReveal: false,
+    },
   ]);
 
-  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null); // Active card index
+  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
+  const [isSaved, setIsSaved] = useState(false); // Track if the reading is saved
   const { cardBack } = useDeck();
+  const { addEntry } = useJournal(); // Access addEntry from JournalContext
   const navigate = useNavigate();
   const backgroundImage = "/assets/images/three.jpg";
 
@@ -37,28 +59,22 @@ export default function ThreeCard() {
     return cards.some((drawnCard) => drawnCard.card.name === card.name);
   };
 
-  // Draw or activate a card
   const drawCard = (index: number) => {
     const updatedCards = [...cards];
 
-    // If the card is already revealed, toggle the blur reveal animation
     if (updatedCards[index].isRevealed) {
       setActiveCardIndex(index);
-      
-      // Reset blurReveal briefly to retrigger the animation
       updatedCards[index].blurReveal = false;
-      setCards([...updatedCards]); // Trigger re-render without blurReveal
+      setCards([...updatedCards]);
 
-      // Toggle blurReveal back to true with a timeout to restart animation
       setTimeout(() => {
         updatedCards[index].blurReveal = true;
         setCards([...updatedCards]);
-      }, 10); // A slight delay to reapply the animation class
+      }, 10);
 
       return;
     }
 
-    // If not revealed, draw a new card
     let randomCard: TarotCard;
     let isReversed: boolean;
 
@@ -67,58 +83,89 @@ export default function ThreeCard() {
       isReversed = Math.random() < 0.5;
     } while (isCardAlreadyDrawn(randomCard));
 
-    // Update the card with the new drawn card details and reveal it
     updatedCards[index] = {
       card: randomCard,
       isReversed,
       isRevealed: true,
-      blurReveal: true, // Start with blur reveal
+      blurReveal: true,
     };
     setCards(updatedCards);
     setActiveCardIndex(index);
   };
 
-  // Reset all cards and clear the active card
   const resetCards = () => {
     setCards([
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
-      { card: placeholderCard, isReversed: false, isRevealed: false, blurReveal: false },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
+      {
+        card: placeholderCard,
+        isReversed: false,
+        isRevealed: false,
+        blurReveal: false,
+      },
     ]);
-    setActiveCardIndex(null); // Clear active card on reset
+    setActiveCardIndex(null);
+    setIsSaved(false); // Reset save status on reset
   };
 
-  // Check if all cards have been revealed
   const allCardsRevealed = cards.every((card) => card.isRevealed);
+
+  const saveToJournal = () => {
+    addEntry({
+      type: "Three Card Reading",
+      cards: cards.map(({ card, isReversed }) => ({
+        title: isReversed ? `${card.name} Reversed` : card.name,
+        image: card.image,
+        description: isReversed ? card.reversedDescription : card.description,
+      })),
+      notes: "",
+    });
+    
+    setIsSaved(true);
+  };
 
   return (
     <div
-      className="threeContainer"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      className='threeContainer'
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
     >
-      <button className="backButton" onClick={() => navigate("/")}>
-        ← Home
+      <button className='backButton' onClick={() => navigate("/")}>
+        Home
       </button>
-      <div className="threeCardWrapper">
+      <div className='threeCardWrapper'>
         {Array.from({ length: 3 }).map((_, index) => {
           const card = cards[index];
           return (
-            <div key={index} className="threeCardContainer">
+            <div key={index} className='threeCardContainer'>
               <div
                 className={`threeCardImageWrapper ${
                   card?.isRevealed ? "revealed" : "clickable"
                 }`}
                 onClick={() => drawCard(index)}
               >
-                {/* Card Back */}
                 {!card?.isRevealed ? (
                   <img
                     src={cardBack}
-                    alt="Card Back"
-                    className="threeCardBackImage"
+                    alt='Card Back'
+                    className='threeCardBackImage'
                   />
                 ) : (
-                  // Card Front with conditional blur reveal animation for active card
                   card.card && (
                     <img
                       key={index}
@@ -126,9 +173,8 @@ export default function ThreeCard() {
                       alt={card.card.name}
                       className={`threeCardImage ${
                         card.isReversed ? "threeReversed" : ""
-                      } ${card.blurReveal ? "blurRevealAnimation" : ""}`} // Apply blur reveal only if blurReveal is true
+                      } ${card.blurReveal ? "blurRevealAnimation" : ""}`}
                       onAnimationEnd={() => {
-                        // Remove blurReveal after animation completes
                         const updatedCards = [...cards];
                         updatedCards[index].blurReveal = false;
                         setCards(updatedCards);
@@ -142,15 +188,14 @@ export default function ThreeCard() {
         })}
       </div>
 
-      {/* Centered description area for the active card */}
       {activeCardIndex !== null && (
-        <div className="centeredDescriptionWrapper">
-          <h2 className="threeCardName">
+        <div className='centeredDescriptionWrapper'>
+          <h2 className='threeCardName'>
             {cards[activeCardIndex].isReversed
               ? `${cards[activeCardIndex].card.name} Reversed`
               : cards[activeCardIndex].card.name}
           </h2>
-          <p className="threeCardDescription">
+          <p className='threeCardDescription'>
             {cards[activeCardIndex].isReversed
               ? cards[activeCardIndex].card.reversedDescription
               : cards[activeCardIndex].card.description}
@@ -158,11 +203,19 @@ export default function ThreeCard() {
         </div>
       )}
 
-      {/* Reset button that only appears when all three cards are revealed */}
       {allCardsRevealed && (
-        <button onClick={resetCards} className="resetButton">
-          Reset
-        </button>
+        <div>
+          <button
+            className='saveToJournalButton'
+            onClick={saveToJournal}
+            disabled={isSaved} // Disable if saved
+          >
+            {isSaved ? "Saved to Journal" : "Save to Journal"}
+          </button>
+          <button className='resetButton' onClick={resetCards}>
+            Reset
+          </button>
+        </div>
       )}
     </div>
   );

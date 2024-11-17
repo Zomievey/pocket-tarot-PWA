@@ -1,13 +1,24 @@
-/* FooterStyles.css */
+/* Existing styles... */
 
 .footerContainer {
   background-color: rgba(28, 21, 42, 0.7);
   text-align: center;
   padding: 1px;
   width: 100vw;
+  margin-top: 2em;
 }
 
 .footerText {
   color: #fff;
   font-size: 14px;
+}
+
+/* New styles for the Contact link */
+.contactLink {
+  color: #fff;
+  text-decoration: none;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
 }

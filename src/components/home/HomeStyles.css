@@ -1,0 +1,42 @@
+.info-icon-container {
+    position: fixed; /* Fixed position ensures it stays in the viewport */
+    top: 20px; /* Distance from the top */
+    right: 20px; /* Distance from the right */
+    z-index: 1000; /* Higher than other elements */
+  }
+  
+  .home-info-box {
+    position: fixed; /* Ensures alignment with the icon */
+    top: 45px; /* Below the info icon */
+    right: 20px; /* Aligns with the right edge of the icon */
+    background-color: #1c152a; /* Semi-transparent black background */
+    color: white; /* White text color */
+    padding: 15px; /* Spacing inside the box */
+    border-radius: 8px; /* Rounded corners */
+    max-width: 250px; /* Maximum width of the box */
+    z-index: 1001; /* Ensure it overlaps other elements */
+    opacity: 0; /* Start with hidden state */
+    transform: translateY(-10px); /* Start slightly above */
+    animation: fadeIn 0.3s ease-in-out forwards; /* Smooth fade-in animation */
+  }
+  
+  .info-icon {
+    cursor: pointer;
+    transition: transform 0.2s ease; /* Smooth scaling effect */
+  }
+  
+  .info-icon:hover {
+    transform: scale(1.2); /* Slight zoom on hover */
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px); /* Start slightly above */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0); /* End in the correct position */
+    }
+  }
+  
