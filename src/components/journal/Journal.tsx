@@ -98,7 +98,10 @@ const Journal = () => {
 
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-  const currentEntries = sortedEntries.slice(indexOfFirstEntry, indexOfLastEntry);
+  const currentEntries = sortedEntries.slice(
+    indexOfFirstEntry,
+    indexOfLastEntry
+  );
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -127,6 +130,8 @@ const Journal = () => {
               });
             },
             onApprove: async (data: Record<string, unknown>, actions: any) => {
+              const details = await actions.order.capture();
+              console.log("Payment Details:", details);
               return actions.order
                 .capture()
                 .then(
@@ -209,16 +214,16 @@ const Journal = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        backgroundAttachment: "scroll",
+        backgroundAttachment: "fixed",
       }}
     >
-      <button className="backButton" onClick={() => navigate("/")}>
+      <button className='backButton' onClick={() => navigate("/")}>
         Home
       </button>
 
       {filteredEntries.length > 0 && (
         <button
-          className="filter-button"
+          className='filter-button'
           onClick={() => setShowFilter(!showFilter)}
         >
           Filter
@@ -228,51 +233,51 @@ const Journal = () => {
 
       {showFilter && (
         <div
-          className="modal-overlay-journal active"
+          className='modal-overlay-journal active'
           onClick={() => setShowFilter(false)}
         />
       )}
 
       <div className={`filter-container ${showFilter ? "active" : ""}`}>
         <button
-          className="modal-journal-close"
+          className='modal-journal-close'
           onClick={() => setShowFilter(false)}
         >
           &times;
         </button>
         <div>
-          <label htmlFor="type">Type:</label>
+          <label htmlFor='type'>Type:</label>
           <Select
             options={typeOptions}
             value={typeOptions.find((option) => option.value === filterType)}
             onChange={(option) => setFilterType(option?.value || null)}
-            placeholder="Select Type"
-            className="react-select-container"
-            classNamePrefix="react-select"
+            placeholder='Select Type'
+            className='react-select-container'
+            classNamePrefix='react-select'
           />
         </div>
         <div>
-          <label htmlFor="start date">Start Date:</label>
+          <label htmlFor='start date'>Start Date:</label>
           <DatePicker
             selected={startDate}
             onChange={(date: any) => setStartDate(date)}
-            dateFormat="MM/dd/yyyy"
-            placeholderText="Select a start date"
-            className="react-datepicker"
+            dateFormat='MM/dd/yyyy'
+            placeholderText='Select a start date'
+            className='react-datepicker'
           />
         </div>
         <div>
-          <label htmlFor="end date">End Date:</label>
+          <label htmlFor='end date'>End Date:</label>
           <DatePicker
             selected={endDate}
             onChange={(date: any) => setEndDate(date)}
-            dateFormat="MM/dd/yyyy"
-            placeholderText="Select an end date"
-            className="react-datepicker"
+            dateFormat='MM/dd/yyyy'
+            placeholderText='Select an end date'
+            className='react-datepicker'
           />
         </div>
         <button
-          className="clear-filter"
+          className='clear-filter'
           onClick={() => {
             setFilterType(null);
             setStartDate(null);
@@ -283,10 +288,10 @@ const Journal = () => {
         </button>
       </div>
 
-      <div className="journal-container">
-        <h1 className="journal-title">Your Journal</h1>
+      <div className='journal-container'>
+        <h1 className='journal-title'>Your Journal</h1>
 
-        {loading && <RiseLoader color="#ffffff" />}
+        {loading && <RiseLoader color='#ffffff' />}
         {!loading && currentEntries.length === 0 && (
           <p>No journal entries yet. Save a card reading to see it here!</p>
         )}
@@ -297,10 +302,10 @@ const Journal = () => {
             const entryId = entry.id;
 
             return (
-              <div className="journal-entry" key={entryId}>
-                <h2 className="journal-entry-title">{entry.type}</h2>
+              <div className='journal-entry' key={entryId}>
+                <h2 className='journal-entry-title'>{entry.type}</h2>
                 <p>{convertTimestamp(entry.timestamp).toLocaleDateString()}</p>
-                <div className="card-group">
+                <div className='card-group'>
                   {entry.cards?.map((card, index) => {
                     const isDescriptionVisible =
                       activeCardDescription[entryId]?.[index] || false;
@@ -308,21 +313,21 @@ const Journal = () => {
                     return (
                       <div
                         key={index}
-                        className="card-image-container"
+                        className='card-image-container'
                         onClick={() => toggleCardDescription(entryId, index)}
                       >
                         {isDescriptionVisible ? (
-                          <div className="card-description">
+                          <div className='card-description'>
                             <p>{card.description}</p>
                           </div>
                         ) : (
                           <img
                             src={card.image}
                             alt={card.title}
-                            className="card-image"
+                            className='card-image'
                           />
                         )}
-                        <p className="card-title">{card.title}</p>
+                        <p className='card-title'>{card.title}</p>
                       </div>
                     );
                   })}
@@ -332,22 +337,22 @@ const Journal = () => {
                     <textarea
                       value={currentNote}
                       onChange={(e) => setCurrentNote(e.target.value)}
-                      placeholder="Add notes about your reading..."
-                      className="notes-textarea"
+                      placeholder='Add notes about your reading...'
+                      className='notes-textarea'
                     />
                     <button
                       onClick={() => handleSave(entryId)}
-                      className="btn-save"
+                      className='btn-save'
                     >
                       Save
                     </button>
                   </div>
                 ) : (
-                  <div className="entry">
+                  <div className='entry'>
                     <p>{entry.notes || "No notes yet."}</p>
                     <button
                       onClick={() => handleEdit(entryId, entry.notes || "")}
-                      className="btn-edit"
+                      className='btn-edit'
                     >
                       Edit Notes
                     </button>
@@ -355,7 +360,7 @@ const Journal = () => {
                 )}
                 <button
                   onClick={() => handleDelete(entryId)}
-                  className="btn-delete"
+                  className='btn-delete'
                 >
                   Delete Entry
                 </button>
@@ -365,26 +370,26 @@ const Journal = () => {
 
         {/* Pagination Controls */}
         {!loading && totalPages > 1 && (
-          <div className="pagination">
+          <div className='pagination'>
             <button
-              className="pagination-button"
+              className='pagination-button'
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
             >
               First
             </button>
             <button
-              className="pagination-button"
+              className='pagination-button'
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
               Previous
             </button>
-            <span className="pagination-info">
+            <span className='pagination-info'>
               Page {currentPage} of {totalPages}
             </span>
             <button
-              className="pagination-button"
+              className='pagination-button'
               onClick={() =>
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
@@ -393,7 +398,7 @@ const Journal = () => {
               Next
             </button>
             <button
-              className="pagination-button"
+              className='pagination-button'
               onClick={() => setCurrentPage(totalPages)}
               disabled={currentPage === totalPages}
             >
@@ -403,10 +408,10 @@ const Journal = () => {
         )}
 
         {!hasUnlimitedAccess && entryCount >= 3 && !loading ? (
-          <div className="no-access-container">
+          <div className='no-access-container'>
             <h2>Unlock Full Journal Access</h2>
             <p>Access unlimited entries for $2.99 USD</p>
-            <div id="paypal-button-container"></div>
+            <div id='paypal-button-container'></div>
           </div>
         ) : null}
       </div>

@@ -14,6 +14,7 @@
   min-height: 100vh;
   box-sizing: border-box;
   padding-bottom: 20px;
+  overflow-y: auto;
 }
 
 /* Journal entries styling */
@@ -71,7 +72,7 @@
 .filter-button {
   position: fixed;
   top: 15px;
-  right: 15px;
+  right: -2px;
   background: none;
   border: none;
   color: #ffffff;

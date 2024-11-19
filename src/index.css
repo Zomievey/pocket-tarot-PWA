@@ -9,22 +9,7 @@ html,
   color: #fff;
   background-color: #1c152a;
   height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto; /* Enables vertical scrolling */
 }
-
-/* Hide scrollbar for all browsers */
-body {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer and Edge */
-}
-
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, and Opera */
-}
-
-/* Rest of your existing styles... */
-
 /* Home container */
 .homeContainer {
   display: flex;
@@ -87,9 +72,9 @@ body::-webkit-scrollbar {
 
 /* Back button styling */
 .backButton {
-  position: absolute;
+  position: fixed;
   top: 20px;
-  left: 10px;
+  left: 5px;
   background: none;
   border: none;
   color: #ffffff;
