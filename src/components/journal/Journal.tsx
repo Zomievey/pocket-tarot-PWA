@@ -108,6 +108,24 @@ const Journal = () => {
     setCurrentPage(1);
   }, [filterType, startDate, endDate]);
 
+  let scrollTimeout: NodeJS.Timeout | null = null;
+
+  const scrollToTop = () => {
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+
+    scrollTimeout = setTimeout(() => {
+      const scrollElement =
+        document.documentElement.scrollTop > 0
+          ? document.documentElement
+          : document.body;
+
+      scrollElement.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
+  };
+
   // Only render the PayPal button once
   useEffect(() => {
     const paypalContainer = document.getElementById("paypal-button-container");
@@ -376,14 +394,20 @@ const Journal = () => {
           <div className='pagination'>
             <button
               className='pagination-button'
-              onClick={() => setCurrentPage(1)}
+              onClick={() => {
+                setCurrentPage(1); // Go to the first page
+                scrollToTop(); // Scroll to the top
+              }}
               disabled={currentPage === 1}
             >
               First
             </button>
             <button
               className='pagination-button'
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 1)); // Go to the previous page
+                scrollToTop(); // Scroll to the top
+              }}
               disabled={currentPage === 1}
             >
               Previous
@@ -393,16 +417,20 @@ const Journal = () => {
             </span>
             <button
               className='pagination-button'
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages)); // Go to the next page
+                scrollToTop(); // Scroll to the top
+              }}
               disabled={currentPage === totalPages}
             >
               Next
             </button>
             <button
               className='pagination-button'
-              onClick={() => setCurrentPage(totalPages)}
+              onClick={() => {
+                setCurrentPage(totalPages); // Go to the last page
+                scrollToTop(); // Scroll to the top
+              }}
               disabled={currentPage === totalPages}
             >
               Last
