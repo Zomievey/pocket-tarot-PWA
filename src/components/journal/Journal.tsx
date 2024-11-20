@@ -175,6 +175,9 @@ const Journal = () => {
       await updateEntry(id, { notes: currentNote });
       setEditingIndex(null);
       setCurrentNote("");
+
+      (document.activeElement as HTMLElement)?.blur(); // Removes focus from the textarea
+      window.scrollTo(0, 0); // Scrolls back to the top of the viewport
     }
   };
 
