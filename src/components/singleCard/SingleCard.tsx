@@ -24,7 +24,7 @@ export default function SingleCard() {
   const [isSaved, setIsSaved] = useState(false); // Track if the card is saved to journal
 
   const { cardBack } = useDeck();
-  const { addEntry } = useJournal(); // Access addEntry from JournalContext
+  const { addEntry, hasUnlimitedAccess, entryCount } = useJournal(); // Access addEntry, hasUnlimitedAccess, and entryCount
   const navigate = useNavigate();
 
   const drawCard = () => {
@@ -74,10 +74,13 @@ export default function SingleCard() {
 
   const backgroundImage = "/assets/images/single.png";
 
+  // Determine if the "Save to Journal" button should be displayed
+  const canSaveToJournal = hasUnlimitedAccess || entryCount < 3;
+
   return (
-    <div className='scrollWrapper'>
+    <div className="scrollWrapper">
       <div
-        className='singleContainer'
+        className="singleContainer"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover",
@@ -86,12 +89,12 @@ export default function SingleCard() {
           backgroundAttachment: "fixed",
         }}
       >
-        <button className='backButton' onClick={() => navigate("/")}>
+        <button className="backButton" onClick={() => navigate("/")}>
           Home
         </button>
-        <div className='singleCardWrapper'>
-          <div className='singleCardContainer'>
-            <div className='singleCardImageContainer'>
+        <div className="singleCardWrapper">
+          <div className="singleCardContainer">
+            <div className="singleCardImageContainer">
               <div
                 className={`singleCardImageWrapper ${
                   isCardDrawn ? "revealed" : "clickable"
@@ -101,8 +104,8 @@ export default function SingleCard() {
                 {!isCardDrawn ? (
                   <img
                     src={cardBack}
-                    alt='Card Back'
-                    className='singleCardBackImage'
+                    alt="Card Back"
+                    className="singleCardBackImage"
                   />
                 ) : (
                   card.card && (
@@ -119,25 +122,33 @@ export default function SingleCard() {
             </div>
           </div>
           {card.card && isCardDrawn && (
-            <div className='singleDescriptionWrapper'>
-              <h2 className='singleCardName'>
+            <div className="singleDescriptionWrapper">
+              <h2 className="singleCardName">
                 {card.isReversed
                   ? `${card.card.name} Reversed`
                   : card.card.name}
               </h2>
-              <p className='singleCardDescription'>
+              <p className="singleCardDescription">
                 {card.isReversed
                   ? card.card.reversedDescription
                   : card.card.description}
               </p>
-              {/* Save to Journal Button */}
-              <button
-                className='saveToJournalButton'
-                onClick={saveToJournal}
-                disabled={isSaved}
-              >
-                {isSaved ? "Saved to Journal" : "Save to Journal"}
-              </button>
+              {/* Conditionally render Save to Journal Button */}
+              {canSaveToJournal && (
+                <button
+                  className="saveToJournalButton"
+                  onClick={saveToJournal}
+                  disabled={isSaved}
+                >
+                  {isSaved ? "Saved to Journal" : "Save to Journal"}
+                </button>
+              )}
+              {!canSaveToJournal && (
+                <p className="saveLimitMessage">
+                  You’ve reached the limit of 3 free journal entries. Delete an entry, or upgrade to save
+                  more!
+                </p>
+              )}
             </div>
           )}
         </div>

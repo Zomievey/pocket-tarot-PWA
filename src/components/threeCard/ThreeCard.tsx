@@ -51,7 +51,7 @@ export default function ThreeCard() {
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
   const [isSaved, setIsSaved] = useState(false); // Track if the reading is saved
   const { cardBack } = useDeck();
-  const { addEntry } = useJournal(); // Access addEntry from JournalContext
+  const { addEntry, hasUnlimitedAccess, entryCount } = useJournal(); // Access hasUnlimitedAccess and entryCount
   const navigate = useNavigate();
   const backgroundImage = "/assets/images/three.jpg";
 
@@ -130,9 +130,12 @@ export default function ThreeCard() {
       })),
       notes: "",
     });
-    
+
     setIsSaved(true);
   };
+
+  // Determine if the "Save to Journal" button should be displayed
+  const canSaveToJournal = hasUnlimitedAccess || entryCount < 3;
 
   return (
     <div
@@ -205,16 +208,28 @@ export default function ThreeCard() {
 
       {allCardsRevealed && (
         <div>
-          <button
-            className='saveToJournalButton'
-            onClick={saveToJournal}
-            disabled={isSaved} // Disable if saved
-          >
-            {isSaved ? "Saved to Journal" : "Save to Journal"}
-          </button>
-          <button className='resetButton' onClick={resetCards}>
-            Reset
-          </button>
+          {!canSaveToJournal && (
+            <div className='no-entries-warning'>
+              <p className='saveLimitMessage'>
+                You’ve reached the limit of 3 free journal entries. Delete an
+                entry, or upgrade to save more!
+              </p>
+            </div>
+          )}
+          <div className='reset-save-buttons'>
+            {canSaveToJournal && (
+              <button
+                className='saveToJournalButton'
+                onClick={saveToJournal}
+                disabled={isSaved} // Disable if saved
+              >
+                {isSaved ? "Saved to Journal" : "Save to Journal"}
+              </button>
+            )}{" "}
+            <button className='resetButton' onClick={resetCards}>
+              Reset
+            </button>
+          </div>
         </div>
       )}
     </div>

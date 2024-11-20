@@ -89,7 +89,7 @@ html,
 }
 
 .resetButton {
-  margin-top: 50px;
+  margin-top: 10px;
   padding: 10px 20px;
   background-color: #1c152a;
   color: #ffffff;
@@ -130,6 +130,27 @@ html,
   cursor: not-allowed;
 }
 
+.no-entries-warning {
+  text-align: center;
+}
+
+.reset-save-buttons {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  text-align: center; /* Center any text */
+}
+
+.saveLimitMessage {
+  color: white;
+  background-color: #a17bdc;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
 /* Responsive adjustments for tablets */
 @media (max-width: 900px) {
   .overlay {
@@ -143,7 +164,6 @@ html,
     font-size: 1.7rem;
   }
 }
-
 /* Responsive adjustments for mobile */
 @media (max-width: 600px) {
   .overlay {
