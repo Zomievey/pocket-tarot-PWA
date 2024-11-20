@@ -3,6 +3,8 @@ import { auth, db } from "./firebaseConfig";
 import { FirebaseError } from "firebase/app";
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -34,11 +36,18 @@ export const useAuth = () => {
   return context;
 };
 
+const isInAppBrowser = () => {
+  const userAgent = navigator.userAgent || window.navigator.userAgent;
+  return /Instagram|FBAN|FBAV|LinkedIn|Twitter/.test(userAgent);
+};
+
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Handle auth state change and fetch user data
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
@@ -57,11 +66,80 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(currentUser);
       setLoading(false);
     });
+
     return unsubscribe;
   }, []);
 
+  // Handle Google login
+  const googleLogin = async () => {
+    setError(null);
+    try {
+      const provider = new GoogleAuthProvider();
+
+      if (isInAppBrowser()) {
+        // Use redirect for in-app browsers
+        await signInWithRedirect(auth, provider);
+      } else {
+        // Use popup for regular browsers
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        // Reference to the user's document in Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        // If user document does not exist, create one with default access
+        if (!userDoc.exists()) {
+          await setDoc(userDocRef, {
+            email: user.email,
+            hasUnlimitedAccess: false,
+            entryCount: 0,
+          });
+        }
+
+        setUser(user);
+      }
+    } catch (error) {
+      console.error("Failed Google login:", error);
+      setError("Failed to log in with Google. Please try again.");
+    }
+  };
+
+  // Handle the redirect result (for signInWithRedirect)
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const user = result.user;
+
+          // Reference to the user's document in Firestore
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          // If user document does not exist, create one with default access
+          if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+              email: user.email,
+              hasUnlimitedAccess: false,
+              entryCount: 0,
+            });
+          }
+
+          setUser(user);
+        }
+      } catch (error) {
+        console.error("Failed to handle redirect result:", error);
+        setError("Failed to log in after redirect. Please try again.");
+      }
+    };
+
+    handleRedirectResult();
+  }, []);
+
+  // Email/password login
   const login = async (email: string, password: string) => {
-    setError(null); // Reset error state
+    setError(null);
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -88,6 +166,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Register user with email/password
   const register = async (email: string, password: string) => {
     setError(null);
     try {
@@ -99,7 +178,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userId = userCredential.user.uid;
       await setDoc(doc(db, "users", userId), {
         email,
-        hasUnlimitedAccess: false, // Set to false initially
+        hasUnlimitedAccess: false,
         entryCount: 0,
       });
       setUser(userCredential.user);
@@ -124,6 +203,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Update journal access
   const updateJournalAccess = React.useCallback(async () => {
     if (user?.uid) {
       try {
@@ -134,32 +214,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user?.uid]);
 
-  const googleLogin = async () => {
-    setError(null);
-    try {
-      const result = await signInWithPopup(auth, new GoogleAuthProvider());
-      const user = result.user;
-
-      // Reference to the user's document in Firestore
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      // If user document does not exist, create one with default access
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          email: user.email,
-          hasUnlimitedAccess: false,
-          entryCount: 0, // Initialize entry count
-        });
-      }
-
-      setUser(user);
-    } catch (error) {
-      console.error("Failed Google login:", error);
-      setError("Failed to log in with Google. Please try again.");
-    }
-  };
-
+  // Logout
   const logout = async () => {
     setError(null);
     try {
@@ -171,6 +226,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Reset password
   const resetPassword = async (email: string) => {
     setError(null);
     try {
